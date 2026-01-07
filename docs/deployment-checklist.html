@@ -595,7 +595,6 @@
                     command: "# Check DynamoDB tables:\naws dynamodb list-tables | grep dental-hospital\n# Should see 8 tables\n\n# Check Lambda functions:\naws lambda list-functions | grep dental-hospital\n# Should see 10+ functions\n\n# Check S3 buckets:\naws s3 ls | grep dental-hospital\n# Should see 3 buckets (images, archive, terraform-state)\n\n# Check API Gateway:\naws apigateway get-rest-apis | grep dental-hospital\n# Should see 1 API\n\n# ✅ If you see all resources, infrastructure is deployed!"
                 }
             },
-            },
             "🔄 Migration (New AWS Account)": {
                 "Read Migration Guide": {
                     description: "Read the Migration Guide section in DEPLOYMENT.md and MIGRATION_GUIDE.md. This explains the free tier strategy, what gets migrated, and date preservation. Migration is for moving to a new AWS account after 10-11 months.",

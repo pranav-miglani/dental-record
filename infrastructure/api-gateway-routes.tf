@@ -18,6 +18,13 @@ resource "aws_api_gateway_resource" "api" {
 # Auth Routes
 # ============================================================================
 
+# Auth resource path: /api/auth
+resource "aws_api_gateway_resource" "auth" {
+  rest_api_id = aws_api_gateway_rest_api.main.id
+  parent_id   = aws_api_gateway_resource.api.id
+  path_part   = "auth"
+}
+
 # POST /api/auth/login
 resource "aws_api_gateway_resource" "auth_login" {
   rest_api_id = aws_api_gateway_rest_api.main.id

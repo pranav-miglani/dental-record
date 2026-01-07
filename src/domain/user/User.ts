@@ -3,7 +3,7 @@
  * Represents a system user (patient, doctor, assistant, admin, RGHS agent)
  */
 
-import { UserRole, Gender } from '../../shared/types'
+import { UserRole } from '../../shared/types'
 
 export class User {
   constructor(

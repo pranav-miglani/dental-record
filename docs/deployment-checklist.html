@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dental Hospital System - Deployment Checklist</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .progress-bar-container {
+            background: rgba(255,255,255,0.2);
+            height: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: #4ade80;
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: rgba(255,255,255,0.1);
+            margin-top: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f3f4f6;
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.2s;
+        }
+
+        .section-header:hover {
+            background: #e5e7eb;
+        }
+
+        .section-header h2 {
+            font-size: 1.5em;
+            color: #1f2937;
+        }
+
+        .section-progress {
+            background: #3b82f6;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .section-content {
+            padding: 20px;
+            display: none;
+        }
+
+        .section-content.active {
+            display: block;
+        }
+
+        .step {
+            padding: 15px;
+            margin: 10px 0;
+            background: #f9fafb;
+            border-left: 4px solid #e5e7eb;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-start;
+            transition: all 0.2s;
+        }
+
+        .step:hover {
+            background: #f3f4f6;
+            border-left-color: #3b82f6;
+        }
+
+        .step.completed {
+            background: #d1fae5;
+            border-left-color: #10b981;
+        }
+
+        .step input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+            margin-right: 15px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+
+        .step-description {
+            color: #6b7280;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .step-commands {
+            background: #1f2937;
+            color: #10b981;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            overflow-x: auto;
+        }
+
+        .step-commands code {
+            display: block;
+            white-space: pre-wrap;
+        }
+
+        .expand-icon {
+            transition: transform 0.3s;
+        }
+
+        .expand-icon.expanded {
+            transform: rotate(180deg);
+        }
+
+        .save-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s;
+        }
+
+        .save-button:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+        }
+
+        .reset-button {
+            position: fixed;
+            bottom: 30px;
+            right: 180px;
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+            transition: all 0.3s;
+        }
+
+        .reset-button:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.6);
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .warning {
+            background: #fef3c7;
+            border-left-color: #f59e0b;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .warning strong {
+            color: #d97706;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .stats {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .save-button, .reset-button {
+                position: relative;
+                bottom: auto;
+                right: auto;
+                margin: 20px 10px;
+                width: calc(50% - 20px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏥 Dental Hospital System</h1>
+            <p>Complete Deployment Checklist</p>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar">0%</div>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number" id="completedCount">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="totalCount">0</div>
+                    <div class="stat-label">Total Steps</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="progressPercent">0%</div>
+                    <div class="stat-label">Progress</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content" id="checklistContent">
+            <!-- Sections will be dynamically generated -->
+        </div>
+    </div>
+
+    <button class="save-button" onclick="saveProgress()">💾 Save Progress</button>
+    <button class="reset-button" onclick="resetProgress()">🔄 Reset All</button>
+    <div class="notification" id="notification">Progress saved!</div>
+
+    <script>
+        const checklistData = {
+            "Prerequisites": {
+                "Install Node.js": {
+                    description: "Install Node.js version 20 or higher. Check installation with: node --version",
+                    command: "node --version\n# Should show v20.x.x or higher"
+                },
+                "Install AWS CLI": {
+                    description: "Install AWS CLI version 2.0 or higher. Verify with: aws --version",
+                    command: "aws --version\n# Should show aws-cli/2.x.x"
+                },
+                "Install Terraform": {
+                    description: "Install Terraform version 1.5 or higher. Verify with: terraform version",
+                    command: "terraform version\n# Should show Terraform v1.5.x or higher"
+                },
+                "Install Git": {
+                    description: "Install Git if not already installed. Verify with: git --version",
+                    command: "git --version"
+                },
+                "Install Docker (Optional)": {
+                    description: "Install Docker for local DynamoDB testing. Verify with: docker --version",
+                    command: "docker --version"
+                }
+            },
+            "AWS Account Setup": {
+                "Create AWS Account": {
+                    description: "Create AWS account at aws.amazon.com. Complete registration and verify email.",
+                    command: "# Go to https://aws.amazon.com/\n# Click 'Create an AWS Account'\n# Complete registration process"
+                },
+                "Create IAM User": {
+                    description: "Create IAM user 'dental-hospital-admin' with AdministratorAccess policy (for initial setup).",
+                    command: "# AWS Console → IAM → Users → Create user\n# Username: dental-hospital-admin\n# Attach AdministratorAccess policy"
+                },
+                "Save Access Keys": {
+                    description: "Save Access Key ID and Secret Access Key immediately. You won't see the secret again!",
+                    command: "# IMPORTANT: Save these credentials securely\n# Access Key ID: [Your Key]\n# Secret Access Key: [Your Secret]"
+                },
+                "Configure AWS CLI": {
+                    description: "Configure AWS CLI with your credentials using: aws configure",
+                    command: "aws configure\n# Enter Access Key ID\n# Enter Secret Access Key\n# Default region: us-east-1\n# Default output: json"
+                },
+                "Verify AWS Configuration": {
+                    description: "Verify AWS CLI is configured correctly: aws sts get-caller-identity",
+                    command: "aws sts get-caller-identity\n# Should return your account ID and user ARN"
+                },
+                "Create S3 Bucket for Terraform State": {
+                    description: "Create S3 bucket for Terraform state storage. Name must be globally unique.",
+                    command: "aws s3 mb s3://dental-hospital-terraform-state-YOUR-NAME\n# Replace YOUR-NAME with something unique"
+                },
+                "Enable S3 Versioning": {
+                    description: "Enable versioning on the Terraform state bucket for recovery.",
+                    command: "aws s3api put-bucket-versioning \\\n  --bucket dental-hospital-terraform-state-YOUR-NAME \\\n  --versioning-configuration Status=Enabled"
+                },
+                "Enable S3 Encryption": {
+                    description: "Enable encryption on the Terraform state bucket.",
+                    command: "aws s3api put-bucket-encryption \\\n  --bucket dental-hospital-terraform-state-YOUR-NAME \\\n  --server-side-encryption-configuration '{\"Rules\":[{\"ApplyServerSideEncryptionByDefault\":{\"SSEAlgorithm\":\"AES256\"}}]}'"
+                }
+            },
+            "Local Development Setup": {
+                "Navigate to Project": {
+                    description: "Navigate to the project directory: cd /Users/apple/repository/dental-hospital-system",
+                    command: "cd /Users/apple/repository/dental-hospital-system\npwd  # Verify location"
+                },
+                "Install Dependencies": {
+                    description: "Install all Node.js dependencies: npm install",
+                    command: "npm install\n# This may take 2-5 minutes"
+                },
+                "Create .env File": {
+                    description: "Create .env file with AWS_REGION, AWS_ACCOUNT_ID, JWT_SECRET, etc.",
+                    command: "cat > .env << 'EOF'\nAWS_REGION=us-east-1\nAWS_ACCOUNT_ID=YOUR_ACCOUNT_ID\nJWT_SECRET=GENERATE_WITH_openssl_rand\nEOF"
+                },
+                "Get AWS Account ID": {
+                    description: "Get your AWS Account ID and update .env file.",
+                    command: "aws sts get-caller-identity --query Account --output text\n# Update .env file with this value"
+                },
+                "Generate JWT Secret": {
+                    description: "Generate secure JWT secret: openssl rand -base64 32",
+                    command: "openssl rand -base64 32\n# Copy the output and update .env file"
+                },
+                "Verify Project Structure": {
+                    description: "Verify project structure has src/, infrastructure/, tests/ directories.",
+                    command: "ls -la\n# Should see: src/, infrastructure/, tests/, package.json"
+                }
+            },
+            "Infrastructure Deployment": {
+                "Navigate to Infrastructure": {
+                    description: "Navigate to infrastructure directory: cd infrastructure",
+                    command: "cd infrastructure\nls -la  # Should see .tf files"
+                },
+                "Initialize Terraform": {
+                    description: "Initialize Terraform with S3 backend. Replace YOUR-BUCKET-NAME with your bucket.",
+                    command: "terraform init \\\n  -backend-config=\"bucket=dental-hospital-terraform-state-YOUR-NAME\" \\\n  -backend-config=\"key=dental-hospital/terraform.tfstate\" \\\n  -backend-config=\"region=us-east-1\""
+                },
+                "Create terraform.tfvars": {
+                    description: "Create terraform.tfvars file with your configuration values.",
+                    command: "cat > terraform.tfvars << 'EOF'\naws_region = \"us-east-1\"\nenvironment = \"production\"\njwt_secret = \"YOUR_JWT_SECRET\"\nEOF"
+                },
+                "Validate Terraform": {
+                    description: "Validate Terraform configuration: terraform validate",
+                    command: "terraform validate\n# Should show: Success! The configuration is valid."
+                },
+                "Terraform Plan": {
+                    description: "Review what will be created: terraform plan. Review carefully!",
+                    command: "terraform plan\n# Review all resources that will be created\n# Should show ~20-30 resources"
+                },
+                "Terraform Apply": {
+                    description: "⚠️ Apply infrastructure: terraform apply. Type 'yes' when prompted. Takes 10-15 minutes.",
+                    command: "terraform apply\n# Type: yes\n# Wait 10-15 minutes for completion"
+                },
+                "Save Terraform Outputs": {
+                    description: "Save Terraform outputs to file for later use.",
+                    command: "terraform output -json > ../terraform-outputs.json\nterraform output  # View outputs"
+                },
+                "Save API Gateway URL": {
+                    description: "Save API Gateway URL for testing: terraform output api_gateway_url",
+                    command: "terraform output api_gateway_url > ../api-url.txt\ncat ../api-url.txt"
+                }
+            },
+            "Application Deployment": {
+                "Build TypeScript": {
+                    description: "Build Lambda functions: npm run build:lambda",
+                    command: "cd ..\nnpm run build:lambda\n# Creates dist/lambda/ directory"
+                },
+                "Verify Build": {
+                    description: "Verify build output exists: ls -la dist/lambda/",
+                    command: "ls -la dist/lambda/\n# Should see: auth/, users/, patients/, etc."
+                },
+                "Package Lambda Functions": {
+                    description: "Package each Lambda function into zip files.",
+                    command: "cd dist/lambda\nfor dir in */; do\n  cd \"$dir\"\n  zip -r \"../${dir%/}.zip\" .\n  cd ..\ndone"
+                },
+                "Create Lambda Environment File": {
+                    description: "Create lambda-env.json with all environment variables from Terraform outputs.",
+                    command: "cd ../../infrastructure\n# Get outputs and create lambda-env.json\n# See deployment guide for full command"
+                },
+                "Deploy Auth Handler": {
+                    description: "Deploy auth-handler Lambda function.",
+                    command: "aws lambda update-function-code \\\n  --function-name dental-hospital-system-production-auth-handler \\\n  --zip-file fileb://dist/auth-handler.zip"
+                },
+                "Deploy Users Handler": {
+                    description: "Deploy users-handler Lambda function.",
+                    command: "aws lambda update-function-code \\\n  --function-name dental-hospital-system-production-users-handler \\\n  --zip-file fileb://dist/users-handler.zip"
+                },
+                "Deploy Patients Handler": {
+                    description: "Deploy patients-handler Lambda function.",
+                    command: "aws lambda update-function-code \\\n  --function-name dental-hospital-system-production-patients-handler \\\n  --zip-file fileb://dist/patients-handler.zip"
+                },
+                "Deploy Procedures Handler": {
+                    description: "Deploy procedures-handler Lambda function.",
+                    command: "aws lambda update-function-code \\\n  --function-name dental-hospital-system-production-procedures-handler \\\n  --zip-file fileb://dist/procedures-handler.zip"
+                },
+                "Deploy Images Handler": {
+                    description: "Deploy images-handler Lambda function.",
+                    command: "aws lambda update-function-code \\\n  --function-name dental-hospital-system-production-images-handler \\\n  --zip-file fileb://dist/images-handler.zip"
+                },
+                "Deploy Remaining Handlers": {
+                    description: "Deploy consent, audit, admin, steps, and archive handlers.",
+                    command: "# Repeat for: consent-handler, audit-handler, admin-handler, steps-handler, archive-handler"
+                },
+                "Update Lambda Environment Variables": {
+                    description: "Update all Lambda functions with environment variables from lambda-env.json.",
+                    command: "for func in auth-handler users-handler patients-handler procedures-handler images-handler; do\n  aws lambda update-function-configuration \\\n    --function-name \"dental-hospital-system-production-${func}\" \\\n    --environment \"Variables=$(cat lambda-env.json)\"\ndone"
+                },
+                "Deploy API Gateway": {
+                    description: "Create API Gateway deployment.",
+                    command: "cd infrastructure\nAPI_ID=$(terraform output -raw api_gateway_id)\naws apigateway create-deployment \\\n  --rest-api-id \"$API_ID\" \\\n  --stage-name prod"
+                }
+            },
+            "Configuration": {
+                "Configure S3 CORS": {
+                    description: "Configure CORS on images bucket for browser access.",
+                    command: "aws s3api put-bucket-cors \\\n  --bucket YOUR_IMAGES_BUCKET \\\n  --cors-configuration file://s3-cors-config.json"
+                },
+                "Verify S3 Buckets": {
+                    description: "Verify all S3 buckets were created successfully.",
+                    command: "aws s3 ls | grep dental-hospital\n# Should see: images, archive buckets"
+                },
+                "Verify DynamoDB Tables": {
+                    description: "Verify all DynamoDB tables were created.",
+                    command: "aws dynamodb list-tables | grep dental-hospital\n# Should see 8 tables"
+                },
+                "Verify Lambda Functions": {
+                    description: "Verify all Lambda functions exist and are deployed.",
+                    command: "aws lambda list-functions | grep dental-hospital\n# Should see 10+ functions"
+                },
+                "Configure SNS Topic": {
+                    description: "Verify SNS topic exists for OTP sending.",
+                    command: "aws sns list-topics | grep dental-hospital\n# Note: Request SMS limits in AWS Support for production"
+                },
+                "Create Admin User": {
+                    description: "Create initial hospital admin user in DynamoDB.",
+                    command: "# Use AWS CLI or API to create admin user\n# See deployment guide for full command"
+                }
+            },
+            "Testing": {
+                "Test API Health": {
+                    description: "Test API health endpoint (if exists).",
+                    command: "API_URL=$(cat api-url.txt)\ncurl \"$API_URL/health\""
+                },
+                "Test Login Endpoint": {
+                    description: "Test login API endpoint with admin credentials.",
+                    command: "curl -X POST \"$API_URL/api/auth/login\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"mobile_number\":\"9999999999\",\"password\":\"YourPassword\"}'"
+                },
+                "Run Unit Tests": {
+                    description: "Run unit tests: npm run test:unit",
+                    command: "npm run test:unit\n# All tests should pass"
+                },
+                "Test Patient Creation": {
+                    description: "Test creating a patient via API (requires authentication).",
+                    command: "# Use access_token from login response\ncurl -X POST \"$API_URL/api/patients\" \\\n  -H \"Authorization: Bearer $ACCESS_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{...patient data...}'"
+                },
+                "Test Image Upload": {
+                    description: "Test image upload functionality.",
+                    command: "# Test image upload endpoint\n# Verify image appears in S3 bucket"
+                },
+                "Verify CloudWatch Logs": {
+                    description: "Check CloudWatch logs for any errors.",
+                    command: "aws logs tail /aws/lambda/dental-hospital-system-production-auth-handler --follow"
+                }
+            },
+            "Monitoring Setup": {
+                "Create CloudWatch Alarm": {
+                    description: "Create CloudWatch alarm for Lambda errors.",
+                    command: "aws cloudwatch put-metric-alarm \\\n  --alarm-name dental-hospital-lambda-errors \\\n  --metric-name Errors \\\n  --namespace AWS/Lambda \\\n  --threshold 10"
+                },
+                "Set Log Retention": {
+                    description: "Set CloudWatch log retention to 30 days.",
+                    command: "aws logs put-retention-policy \\\n  --log-group-name /aws/lambda/dental-hospital-system-production-auth-handler \\\n  --retention-in-days 30"
+                },
+                "Create CloudWatch Dashboard": {
+                    description: "Create CloudWatch dashboard for monitoring (optional).",
+                    command: "# Use AWS Console or CLI to create dashboard\n# Monitor: Lambda invocations, API Gateway requests, DynamoDB metrics"
+                }
+            },
+            "Security Hardening": {
+                "Review IAM Policies": {
+                    description: "Review IAM policies and ensure least privilege principle.",
+                    command: "# Review all IAM roles created by Terraform\n# Ensure they have minimum required permissions"
+                },
+                "Enable MFA": {
+                    description: "Enable MFA for AWS root account and IAM users.",
+                    command: "# AWS Console → IAM → Users → Security credentials → Enable MFA"
+                },
+                "Rotate Secrets": {
+                    description: "Generate new JWT secret and update Lambda functions.",
+                    command: "openssl rand -base64 32\n# Update Lambda environment variables with new secret"
+                },
+                "Enable DynamoDB Point-in-Time Recovery": {
+                    description: "Enable PITR for critical DynamoDB tables.",
+                    command: "aws dynamodb update-continuous-backups \\\n  --table-name dental-hospital-system-production-users \\\n  --point-in-time-recovery-specification PointInTimeRecoveryEnabled=true"
+                },
+                "Review Security Groups": {
+                    description: "Review and restrict security groups (if any).",
+                    command: "# Check AWS Console → EC2 → Security Groups\n# Ensure no unnecessary open ports"
+                }
+            },
+            "Final Verification": {
+                "Verify All Resources": {
+                    description: "Verify all AWS resources are created and accessible.",
+                    command: "# Check:\n# - All DynamoDB tables exist\n# - All Lambda functions deployed\n# - API Gateway is accessible\n# - S3 buckets exist"
+                },
+                "Test Complete Workflow": {
+                    description: "Test complete user workflow: login → create patient → create procedure → upload image.",
+                    command: "# End-to-end testing of complete workflow"
+                },
+                "Document Configuration": {
+                    description: "Document your specific configuration (API URLs, bucket names, etc.).",
+                    command: "# Save all important URLs and configuration values\n# Create a local config file (don't commit secrets!)"
+                },
+                "Backup Configuration": {
+                    description: "Backup Terraform state and configuration files.",
+                    command: "# Backup:\n# - terraform-outputs.json\n# - terraform.tfvars (without secrets)\n# - .env file (securely, not in git)"
+                }
+            }
+        };
+
+        let checklistState = {};
+
+        // Load saved progress
+        function loadProgress() {
+            const saved = localStorage.getItem('deploymentChecklist');
+            if (saved) {
+                checklistState = JSON.parse(saved);
+            }
+        }
+
+        // Save progress
+        function saveProgress() {
+            localStorage.setItem('deploymentChecklist', JSON.stringify(checklistState));
+            showNotification('Progress saved!');
+            updateProgress();
+        }
+
+        // Reset all progress
+        function resetProgress() {
+            if (confirm('Are you sure you want to reset all progress? This cannot be undone.')) {
+                checklistState = {};
+                localStorage.removeItem('deploymentChecklist');
+                renderChecklist();
+                showNotification('Progress reset!');
+            }
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Toggle checkbox
+        function toggleCheckbox(section, step) {
+            const key = `${section}-${step}`;
+            if (!checklistState[key]) {
+                checklistState[key] = true;
+            } else {
+                checklistState[key] = !checklistState[key];
+            }
+            saveProgress();
+            renderChecklist();
+        }
+
+        // Toggle section
+        function toggleSection(sectionId) {
+            const content = document.getElementById(`section-${sectionId}`);
+            const icon = document.getElementById(`icon-${sectionId}`);
+            content.classList.toggle('active');
+            icon.classList.toggle('expanded');
+        }
+
+        // Update progress
+        function updateProgress() {
+            let completed = 0;
+            let total = 0;
+
+            Object.keys(checklistData).forEach(section => {
+                Object.keys(checklistData[section]).forEach(step => {
+                    total++;
+                    const key = `${section}-${step}`;
+                    if (checklistState[key]) {
+                        completed++;
+                    }
+                });
+            });
+
+            const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+            
+            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('progressBar').textContent = percent + '%';
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('progressPercent').textContent = percent + '%';
+        }
+
+        // Calculate section progress
+        function getSectionProgress(section) {
+            let completed = 0;
+            let total = 0;
+            Object.keys(checklistData[section]).forEach(step => {
+                total++;
+                const key = `${section}-${step}`;
+                if (checklistState[key]) {
+                    completed++;
+                }
+            });
+            return total > 0 ? Math.round((completed / total) * 100) : 0;
+        }
+
+        // Render checklist
+        function renderChecklist() {
+            const content = document.getElementById('checklistContent');
+            content.innerHTML = '';
+
+            Object.keys(checklistData).forEach((section, sectionIndex) => {
+                const sectionProgress = getSectionProgress(section);
+                const sectionId = section.toLowerCase().replace(/\s+/g, '-');
+
+                const sectionDiv = document.createElement('div');
+                sectionDiv.className = 'section';
+                sectionDiv.innerHTML = `
+                    <div class="section-header" onclick="toggleSection('${sectionId}')">
+                        <h2>${sectionIndex + 1}. ${section}</h2>
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div class="section-progress">${sectionProgress}%</div>
+                            <span class="expand-icon" id="icon-${sectionId}">▼</span>
+                        </div>
+                    </div>
+                    <div class="section-content" id="section-${sectionId}">
+                        ${Object.keys(checklistData[section]).map((step, stepIndex) => {
+                            const key = `${section}-${step}`;
+                            const isCompleted = checklistState[key] || false;
+                            const stepData = checklistData[section][step];
+                            
+                            return `
+                                <div class="step ${isCompleted ? 'completed' : ''}">
+                                    <input type="checkbox" 
+                                           ${isCompleted ? 'checked' : ''} 
+                                           onchange="toggleCheckbox('${section}', '${step.replace(/'/g, "\\'")}')"
+                                           id="check-${key.replace(/\s+/g, '-')}">
+                                    <div class="step-content">
+                                        <div class="step-title">${stepIndex + 1}. ${step}</div>
+                                        <div class="step-description">${stepData.description}</div>
+                                        ${stepData.command ? `
+                                            <div class="step-commands">
+                                                <code>${stepData.command}</code>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                content.appendChild(sectionDiv);
+            });
+
+            updateProgress();
+        }
+
+        // Initialize
+        loadProgress();
+        renderChecklist();
+
+        // Auto-save every 30 seconds
+        setInterval(saveProgress, 30000);
+    </script>
+</body>
+</html>
+

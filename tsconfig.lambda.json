@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist/lambda",
+    "rootDir": "./src/interfaces"
+  },
+  "include": ["src/interfaces/**/*"],
+  "exclude": ["node_modules", "dist", "tests", "frontend"]
+}
+

@@ -37,7 +37,7 @@
     "build:mobile:android": "cd mobile && npm run build:android",
     "build:mobile:ios": "cd mobile && npm run build:ios",
     "build:mobile:web": "cd mobile && npm run build:web",
-    "deploy": "cd infrastructure && terraform apply",
+    "deploy:terraform": "cd infrastructure && terraform apply",
     "deploy:lambda": "npm run build:lambda && ./scripts/deploy-lambda.sh",
     "format": "prettier --write \"**/*.{ts,tsx,json,md}\""
   },

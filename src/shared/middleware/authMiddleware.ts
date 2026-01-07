@@ -7,12 +7,18 @@ import { AuthService } from '../../application/auth/AuthService'
 import { UnauthorizedError } from '../errors'
 
 export interface AuthenticatedEvent extends APIGatewayProxyEvent {
-  user?: {
+  user: {
     user_id: string
     mobile_number: string
     roles: string[]
     impersonated_by?: string
   }
+  body: string | null
+  httpMethod: string
+  path: string
+  queryStringParameters: { [name: string]: string | undefined } | null
+  requestContext: APIGatewayProxyEvent['requestContext']
+  headers: { [name: string]: string | undefined }
 }
 
 /**

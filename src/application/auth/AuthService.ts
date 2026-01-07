@@ -173,7 +173,7 @@ export class AuthService {
 
     return jwt.sign(payload, this.jwtSecret, {
       expiresIn: this.accessTokenExpiry,
-    })
+    } as jwt.SignOptions) as string
   }
 
   /**
@@ -188,7 +188,7 @@ export class AuthService {
 
     return jwt.sign(payload, this.jwtSecret, {
       expiresIn: this.refreshTokenExpiry,
-    })
+    } as jwt.SignOptions) as string
   }
 
   /**

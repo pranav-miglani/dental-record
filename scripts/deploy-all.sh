@@ -295,6 +295,9 @@ deploy_lambda_functions() {
   # Get table names and bucket names from Terraform outputs
   print_step "Getting configuration from Terraform outputs..."
   
+  # Get JWT secret from terraform.tfvars or .env
+  JWT_SECRET_VALUE=$(grep '^jwt_secret' terraform.tfvars 2>/dev/null | cut -d'"' -f2 || grep 'JWT_SECRET' ../.env 2>/dev/null | cut -d'=' -f2 || echo '')
+  
   # Create lambda-env.json
   cat > ../lambda-env.json << EOF
 {
@@ -306,9 +309,9 @@ deploy_lambda_functions() {
   "CONSENT_TABLE_NAME": "$(terraform output -raw consent_table_name 2>/dev/null || echo '')",
   "AUDIT_LOGS_TABLE_NAME": "$(terraform output -raw audit_logs_table_name 2>/dev/null || echo '')",
   "USER_PATIENT_MAPPING_TABLE_NAME": "$(terraform output -raw user_patient_mapping_table_name 2>/dev/null || echo '')",
-  "IMAGES_BUCKET": "$(terraform output -raw images_bucket_name 2>/dev/null || echo '')",
-  "ARCHIVE_BUCKET": "$(terraform output -raw archive_bucket_name 2>/dev/null || echo '')",
-  "JWT_SECRET": "$(terraform output -raw jwt_secret 2>/dev/null || echo '')",
+  "IMAGES_BUCKET": "$(terraform output -raw s3_images_bucket_name 2>/dev/null || echo '')",
+  "ARCHIVE_BUCKET": "$(terraform output -raw s3_archive_bucket_name 2>/dev/null || echo '')",
+  "JWT_SECRET": "$JWT_SECRET_VALUE",
   "JWT_ACCESS_EXPIRY": "30m",
   "JWT_REFRESH_EXPIRY": "30d",
   "AWS_REGION": "$AWS_REGION"

@@ -49,10 +49,18 @@ describe('AuthService', () => {
       create: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
-    }
+      countAll: jest.fn(),
+    } as jest.Mocked<IUserRepository>
 
     // Create auth service
-    authService = new AuthService(mockUserRepository, 'test-secret', '30m', '30d')
+    authService = new AuthService(
+      mockUserRepository,
+      undefined, // userPatientMappingRepository (optional)
+      undefined, // patientRepository (optional)
+      'test-secret',
+      '30m',
+      '30d'
+    )
   })
 
   describe('login', () => {

@@ -3,6 +3,13 @@
  * Uses localStorage for web platform
  */
 
+// Type declarations for web environment
+declare global {
+  interface Window {
+    localStorage?: Storage;
+  }
+}
+
 export const webStorage = {
   getItem: async (key: string): Promise<string | null> => {
     if (typeof window === 'undefined' || !window.localStorage) {
@@ -29,7 +36,7 @@ export const webStorage = {
     if (typeof window === 'undefined' || !window.localStorage) {
       return;
     }
-    keys.forEach(key => window.localStorage.removeItem(key));
+    keys.forEach(key => window.localStorage!.removeItem(key));
   },
 
   clear: async (): Promise<void> => {

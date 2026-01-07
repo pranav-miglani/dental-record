@@ -1,4 +1,11 @@
-import {Platform} from 'react-native';
+// Platform detection - works for both React Native and Web
+let Platform: {OS: string};
+try {
+  Platform = require('react-native').Platform;
+} catch {
+  // Web environment - Platform not available
+  Platform = {OS: 'web'};
+}
 
 export const isWeb = Platform.OS === 'web';
 export const isIOS = Platform.OS === 'ios';

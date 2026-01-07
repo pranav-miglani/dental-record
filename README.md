@@ -167,6 +167,7 @@ terraform apply
 - [DynamoDB Schema](./docs/DYNAMODB_SCHEMA_DESIGN.md) - Database schema and access patterns
 - [API Specification](./docs/API_SPECIFICATION.md) - All API endpoints
 - [Deployment Guide](./docs/DEPLOYMENT_GUIDE.md) - Step-by-step deployment instructions
+- [Migration Guide](./docs/MIGRATION_GUIDE.md) - Migrate to new AWS account (free tier strategy)
 
 ## 🧪 Testing
 

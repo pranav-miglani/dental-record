@@ -134,15 +134,14 @@ check_prerequisites() {
   AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
   print_success "AWS credentials valid (Account: $AWS_ACCOUNT_ID)"
   
-  # Check .env file
-  if [ ! -f ".env" ]; then
-    print_error ".env file not found. Please create it first."
-    exit 1
+  # Check .env file (not required in CI/CD)
+  if [ -f ".env" ]; then
+    print_success ".env file found"
+  elif [ -z "$GITHUB_ACTIONS" ]; then
+    print_info ".env file not found (will use environment variables or defaults)"
+  else
+    print_success "Using GitHub Secrets (CI/CD mode)"
   fi
-  print_success ".env file found"
-  
-  # Load .env variables
-  export $(grep -v '^#' .env | xargs)
   
   echo ""
 }

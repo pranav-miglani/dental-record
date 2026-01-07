@@ -142,24 +142,40 @@ dental-hospital-system/
 
 ### Deployment
 
-**👋 New to AWS and deployment?** Start with the [Beginner's Guide](./docs/DEPLOYMENT_GUIDE_BEGINNER.md)!
+**🚀 One-Click Deployment** (Recommended):
+```bash
+# For new setup
+npm run deploy:all
 
-**Available Deployment Guides**:
-- 📖 [Beginner's Guide](./docs/DEPLOYMENT_GUIDE_BEGINNER.md) - Complete step-by-step for beginners (assumes zero knowledge)
+# For migration (new AWS account)
+npm run deploy:all:migration
+```
+
+This single command will:
+- ✅ Check all prerequisites
+- ✅ Set up Terraform backend
+- ✅ Deploy all infrastructure
+- ✅ Build and deploy Lambda functions
+- ✅ Deploy API Gateway
+- ✅ Create admin user
+- ✅ Verify deployment
+
+**📖 Deployment Guides**:
+- 🚀 [One-Click Deployment](./docs/ONE_CLICK_DEPLOYMENT.md) - **Start here!** Automated deployment script
+- 📖 [Beginner's Guide](./docs/DEPLOYMENT_GUIDE_BEGINNER.md) - Complete step-by-step for beginners
 - ⚡ [Quick Start](./docs/DEPLOYMENT_QUICK_START.md) - For experienced developers
 - 📘 [Standard Guide](./docs/DEPLOYMENT_GUIDE.md) - Standard deployment instructions
+- 🔄 [Migration Guide](./docs/MIGRATION_GUIDE.md) - Migrate to new AWS account (free tier strategy)
 - 📋 [Interactive Checklist](./docs/deployment-checklist.html) - Track your deployment progress
 - 📚 [Documentation Index](./docs/DEPLOYMENT_INDEX.md) - Choose the right guide for you
 
-**Quick deployment** (for experienced users):
+**Manual deployment** (if needed):
 ```bash
 cd infrastructure
 terraform init
 terraform plan
 terraform apply
 ```
-
-**For complete beginners**, see [DEPLOYMENT_GUIDE_BEGINNER.md](./docs/DEPLOYMENT_GUIDE_BEGINNER.md) for detailed instructions.
 
 ## 📚 Documentation
 

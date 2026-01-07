@@ -111,3 +111,43 @@ variable "tags" {
   }
 }
 
+# ============================================================================
+# Custom Domain Variables (Optional)
+# ============================================================================
+
+variable "api_custom_domain" {
+  description = "Custom domain for API Gateway (e.g., api.example.com)"
+  type        = string
+  default     = ""
+}
+
+variable "api_acm_certificate_arn" {
+  description = "ACM certificate ARN for API Gateway custom domain (must be in us-east-1)"
+  type        = string
+  default     = ""
+}
+
+variable "api_route53_hosted_zone_id" {
+  description = "Route53 hosted zone ID for API Gateway custom domain"
+  type        = string
+  default     = ""
+}
+
+variable "cloudfront_custom_domain" {
+  description = "Custom domain for CloudFront distribution (e.g., cdn.example.com)"
+  type        = string
+  default     = ""
+}
+
+variable "cloudfront_acm_certificate_arn" {
+  description = "ACM certificate ARN for CloudFront custom domain (must be in us-east-1)"
+  type        = string
+  default     = ""
+}
+
+variable "cloudfront_route53_hosted_zone_id" {
+  description = "Route53 hosted zone ID for CloudFront custom domain"
+  type        = string
+  default     = ""
+}
+

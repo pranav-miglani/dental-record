@@ -4,8 +4,10 @@
   "description": "Dental Hospital Records Management System - Serverless Architecture",
   "private": true,
   "scripts": {
+    "deploy": "./scripts/deploy-interactive.sh",
     "deploy:all": "./scripts/deploy-all.sh",
     "deploy:all:migration": "./scripts/deploy-all.sh --migration",
+    "deploy:interactive": "./scripts/deploy-interactive.sh",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

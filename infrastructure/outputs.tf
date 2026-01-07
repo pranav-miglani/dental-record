@@ -91,3 +91,13 @@ output "cloudfront_domain_name" {
   value       = var.enable_cloudfront ? aws_cloudfront_distribution.images[0].domain_name : null
 }
 
+output "api_custom_domain_name" {
+  description = "API Gateway custom domain name (if configured)"
+  value       = var.api_custom_domain != "" ? var.api_custom_domain : null
+}
+
+output "cloudfront_custom_domain_name" {
+  description = "CloudFront custom domain name (if configured)"
+  value       = var.cloudfront_custom_domain != "" ? var.cloudfront_custom_domain : null
+}
+

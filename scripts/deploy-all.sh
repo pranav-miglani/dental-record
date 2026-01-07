@@ -40,8 +40,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_ROOT"
 
-PROJECT_NAME="dental-hospital-system"
-ENVIRONMENT="production"
+# Load from .env if exists, otherwise use defaults
+if [ -f ".env" ]; then
+  export $(grep -v '^#' .env | grep -v '^$' | xargs)
+fi
+
+PROJECT_NAME="${PROJECT_NAME:-dental-hospital-system}"
+ENVIRONMENT="${ENVIRONMENT:-production}"
 AWS_REGION="${AWS_REGION:-us-east-1}"
 
 # Parse arguments
@@ -151,7 +156,7 @@ setup_terraform_backend() {
   
   # Check if backend bucket is specified
   if [ -z "$TERRAFORM_STATE_BUCKET" ]; then
-    print_step "Terraform state bucket not specified in .env"
+    print_step "Terraform state bucket not specified"
     print_step "Creating S3 bucket for Terraform state..."
     
     BUCKET_NAME="dental-hospital-terraform-state-$(date +%s)"
@@ -187,13 +192,43 @@ setup_terraform_backend() {
       print_success "Blocked public access"
       
       TERRAFORM_STATE_BUCKET="$BUCKET_NAME"
+      
+      # Update .env file
+      if [ -f "../.env" ]; then
+        if ! grep -q "TERRAFORM_STATE_BUCKET" ../.env; then
+          echo "TERRAFORM_STATE_BUCKET=$BUCKET_NAME" >> ../.env
+        fi
+      fi
     else
       print_error "Failed to create bucket. It may already exist."
       print_step "Please set TERRAFORM_STATE_BUCKET in .env file"
       exit 1
     fi
   else
-    print_success "Using existing Terraform state bucket: $TERRAFORM_STATE_BUCKET"
+    print_success "Using Terraform state bucket: $TERRAFORM_STATE_BUCKET"
+    
+    # Verify bucket exists
+    if ! aws s3 ls "s3://$TERRAFORM_STATE_BUCKET" &>/dev/null; then
+      print_step "Bucket doesn't exist, creating it..."
+      aws s3 mb "s3://$TERRAFORM_STATE_BUCKET" --region "$AWS_REGION"
+      aws s3api put-bucket-versioning \
+        --bucket "$TERRAFORM_STATE_BUCKET" \
+        --versioning-configuration Status=Enabled
+      aws s3api put-bucket-encryption \
+        --bucket "$TERRAFORM_STATE_BUCKET" \
+        --server-side-encryption-configuration '{
+          "Rules": [{
+            "ApplyServerSideEncryptionByDefault": {
+              "SSEAlgorithm": "AES256"
+            }
+          }]
+        }'
+      aws s3api put-public-access-block \
+        --bucket "$TERRAFORM_STATE_BUCKET" \
+        --public-access-block-configuration \
+          "BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true"
+      print_success "Bucket created and configured"
+    fi
   fi
   
   # Initialize Terraform
@@ -222,31 +257,63 @@ deploy_infrastructure() {
   
   cd infrastructure
   
-  # Create terraform.tfvars if it doesn't exist
-  if [ ! -f "terraform.tfvars" ]; then
-    print_step "Creating terraform.tfvars..."
+  # Create or update terraform.tfvars
+  print_step "Creating/updating terraform.tfvars..."
+  
+  # Get JWT secret from .env or generate new one
+  if [ -z "$JWT_SECRET" ]; then
+    JWT_SECRET=$(openssl rand -base64 32)
+    print_step "Generated new JWT secret"
+  fi
+  
+  # Build terraform.tfvars content
+  TFVARS_CONTENT="aws_region = \"$AWS_REGION\"
+environment = \"$ENVIRONMENT\"
+project_name = \"$PROJECT_NAME\"
+jwt_secret = \"$JWT_SECRET\"
+jwt_access_expiry = \"30m\"
+jwt_refresh_expiry = \"30d\"
+rate_limit_per_user = 15
+api_gateway_stage_name = \"prod\"
+enable_cloudfront = true"
+  
+  # Add custom domain variables if provided
+  if [ -n "$API_CUSTOM_DOMAIN" ]; then
+    TFVARS_CONTENT="$TFVARS_CONTENT
+
+# API Gateway Custom Domain
+api_custom_domain = \"$API_CUSTOM_DOMAIN\""
     
-    # Get JWT secret from .env or generate new one
-    if [ -z "$JWT_SECRET" ]; then
-      JWT_SECRET=$(openssl rand -base64 32)
-      print_step "Generated new JWT secret"
+    if [ -n "$ACM_CERTIFICATE_ARN" ]; then
+      TFVARS_CONTENT="$TFVARS_CONTENT
+api_acm_certificate_arn = \"$ACM_CERTIFICATE_ARN\""
     fi
     
-    cat > terraform.tfvars << EOF
-aws_region = "$AWS_REGION"
-environment = "$ENVIRONMENT"
-project_name = "$PROJECT_NAME"
-jwt_secret = "$JWT_SECRET"
-jwt_access_expiry = "30m"
-jwt_refresh_expiry = "30d"
-rate_limit_per_user = 15
-api_gateway_stage_name = "prod"
-enable_cloudfront = true
-EOF
-    print_success "Created terraform.tfvars"
-  else
-    print_success "terraform.tfvars already exists"
+    if [ -n "$ROUTE53_HOSTED_ZONE_ID" ]; then
+      TFVARS_CONTENT="$TFVARS_CONTENT
+api_route53_hosted_zone_id = \"$ROUTE53_HOSTED_ZONE_ID\""
+    fi
   fi
+  
+  if [ -n "$CLOUDFRONT_CUSTOM_DOMAIN" ]; then
+    TFVARS_CONTENT="$TFVARS_CONTENT
+
+# CloudFront Custom Domain
+cloudfront_custom_domain = \"$CLOUDFRONT_CUSTOM_DOMAIN\""
+    
+    if [ -n "$CLOUDFRONT_ACM_CERTIFICATE_ARN" ]; then
+      TFVARS_CONTENT="$TFVARS_CONTENT
+cloudfront_acm_certificate_arn = \"$CLOUDFRONT_ACM_CERTIFICATE_ARN\""
+    fi
+    
+    if [ -n "$CLOUDFRONT_ROUTE53_ZONE_ID" ]; then
+      TFVARS_CONTENT="$TFVARS_CONTENT
+cloudfront_route53_hosted_zone_id = \"$CLOUDFRONT_ROUTE53_ZONE_ID\""
+    fi
+  fi
+  
+  echo "$TFVARS_CONTENT" > terraform.tfvars
+  print_success "terraform.tfvars created/updated"
   
   # Validate
   print_step "Validating Terraform configuration..."

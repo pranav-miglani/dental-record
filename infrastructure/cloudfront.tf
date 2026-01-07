@@ -63,10 +63,16 @@ resource "aws_cloudfront_distribution" "images" {
     }
   }
 
-  # Viewer certificate (use CloudFront default)
+  # Viewer certificate (use custom domain certificate if provided, otherwise default)
   viewer_certificate {
-    cloudfront_default_certificate = true
+    acm_certificate_arn      = var.cloudfront_acm_certificate_arn != "" ? var.cloudfront_acm_certificate_arn : null
+    cloudfront_default_certificate = var.cloudfront_acm_certificate_arn == "" ? true : false
+    ssl_support_method       = var.cloudfront_acm_certificate_arn != "" ? "sni-only" : null
+    minimum_protocol_version = var.cloudfront_acm_certificate_arn != "" ? "TLSv1.2_2021" : null
   }
+
+  # Custom domain aliases (if provided)
+  aliases = var.cloudfront_custom_domain != "" ? [var.cloudfront_custom_domain] : []
 
   tags = merge(
     local.common_tags,

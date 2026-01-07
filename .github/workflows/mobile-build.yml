@@ -154,7 +154,7 @@ jobs:
   lint-and-test:
     name: Lint & Test Mobile App
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout code
@@ -179,16 +179,30 @@ jobs:
         working-directory: ./mobile
         run: npm run type-check
 
-      - name: Run tests
+      - name: Run unit tests with coverage
         working-directory: ./mobile
-        run: npm test -- --coverage
+        run: npm test -- --coverage --coverageReporters=text --coverageReporters=lcov --coverageReporters=html
 
-      - name: Upload coverage
+      - name: Upload coverage to Codecov
         if: always()
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         with:
           files: ./mobile/coverage/lcov.info
           flags: mobile
-          name: mobile-tests
-          fail_ci_if_error: false
+          name: mobile-unit-tests
+          fail_ci_if_error: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: mobile-coverage-report
+          path: mobile/coverage/
+          retention-days: 7
+
+      - name: Check coverage threshold
+        working-directory: ./mobile
+        run: |
+          npm run test:coverage || (echo "❌ Coverage below 100% threshold" && exit 1)
 

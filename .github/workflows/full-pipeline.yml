@@ -199,12 +199,14 @@ jobs:
           echo "|------------|--------|----------|" >> $GITHUB_STEP_SUMMARY
           echo "| 🔬 Unit Tests | ${{ needs.unit-tests.result == 'success' && '✅ Passed' || '❌ Failed' }} | - |" >> $GITHUB_STEP_SUMMARY
           echo "| 🔗 Integration Tests | ${{ needs.integration-tests.result == 'success' && '✅ Passed' || '❌ Failed' }} | - |" >> $GITHUB_STEP_SUMMARY
+          echo "| 📱 Mobile App Tests | ${{ needs.mobile-tests.result == 'success' && '✅ Passed' || '❌ Failed' }} | - |" >> $GITHUB_STEP_SUMMARY
           echo "| 🐳 E2E Tests (Docker) | ${{ needs.e2e-tests.result == 'success' && '✅ Passed' || '❌ Failed' }} | - |" >> $GITHUB_STEP_SUMMARY
           echo "| 🔍 Lint & Type Check | ${{ needs.lint-and-type-check.result == 'success' && '✅ Passed' || '❌ Failed' }} | - |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
           if [ "${{ needs.unit-tests.result }}" != "success" ] || \
              [ "${{ needs.integration-tests.result }}" != "success" ] || \
+             [ "${{ needs.mobile-tests.result }}" != "success" ] || \
              [ "${{ needs.e2e-tests.result }}" != "success" ] || \
              [ "${{ needs.lint-and-type-check.result }}" != "success" ]; then
             echo "❌ **Some tests failed. Please review the logs above.**" >> $GITHUB_STEP_SUMMARY

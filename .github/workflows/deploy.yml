@@ -71,10 +71,56 @@ jobs:
         if: always()
         run: docker stop dynamodb-local && docker rm dynamodb-local || true
 
+  mobile-tests:
+    name: Mobile App Tests
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: mobile/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./mobile
+        run: npm ci
+
+      - name: Run linter
+        working-directory: ./mobile
+        run: npm run lint
+
+      - name: Type check
+        working-directory: ./mobile
+        run: npm run type-check
+
+      - name: Run unit tests with coverage
+        working-directory: ./mobile
+        run: npm test -- --coverage
+
+      - name: Check coverage threshold
+        working-directory: ./mobile
+        run: |
+          npm run test:coverage || (echo "❌ Coverage below 100% threshold" && exit 1)
+
+      - name: Upload coverage
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./mobile/coverage/lcov.info
+          flags: mobile
+          name: mobile-tests
+          fail_ci_if_error: true
+
   e2e-tests:
     name: E2E Tests (Docker)
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test, mobile-tests]
 
     steps:
       - name: Checkout code
@@ -122,7 +168,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: [test, e2e-tests]
+    needs: [test, mobile-tests, e2e-tests]
 
     steps:
       - name: Checkout code

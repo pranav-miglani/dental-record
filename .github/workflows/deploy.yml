@@ -1,81 +1,35 @@
-name: Deploy
+name: Deploy to AWS
 
 on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+          - production
+          - staging
   push:
     branches:
       - main
-      - develop
-  pull_request:
-    branches:
-      - main
+    paths:
+      - 'infrastructure/**'
+      - 'src/**'
+      - 'scripts/**'
+      - '.github/workflows/deploy.yml'
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION || 'us-east-1' }}
+  PROJECT_NAME: ${{ secrets.PROJECT_NAME || 'dental-hospital-system' }}
+  ENVIRONMENT: ${{ github.event.inputs.environment || 'production' }}
 
 jobs:
-  test:
-    name: Run Tests
+  deploy:
+    name: Deploy Infrastructure and Application
     runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Run linter
-        run: npm run lint
-
-      - name: Run type check
-        run: npm run type-check
-
-      - name: Run unit tests
-        run: npm run test:unit
-
-      - name: Start DynamoDB Local
-        run: |
-          docker run -d \
-            --name dynamodb-local \
-            -p 8000:8000 \
-            amazon/dynamodb-local:latest \
-            -jar DynamoDBLocal.jar -sharedDb -inMemory
-
-      - name: Wait for DynamoDB
-        run: |
-          for i in {1..30}; do
-            curl -f http://localhost:8000 > /dev/null 2>&1 && break || sleep 1
-          done
-
-      - name: Setup DynamoDB tables
-        run: |
-          export DYNAMODB_ENDPOINT=http://localhost:8000
-          export AWS_REGION=us-east-1
-          export AWS_ACCESS_KEY_ID=test
-          export AWS_SECRET_ACCESS_KEY=test
-          chmod +x scripts/setup-docker-tables.sh
-          ./scripts/setup-docker-tables.sh
-
-      - name: Run integration tests
-        run: npm run test:integration
-        env:
-          DYNAMODB_ENDPOINT: http://localhost:8000
-          AWS_REGION: us-east-1
-          AWS_ACCESS_KEY_ID: test
-          AWS_SECRET_ACCESS_KEY: test
-
-      - name: Cleanup DynamoDB
-        if: always()
-        run: docker stop dynamodb-local && docker rm dynamodb-local || true
-
-  mobile-tests:
-    name: Mobile App Tests
-    runs-on: ubuntu-latest
-    needs: test
-
+    
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -85,173 +39,76 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: mobile/package-lock.json
-
-      - name: Install dependencies
-        working-directory: ./mobile
-        run: npm ci
-
-      - name: Run linter
-        working-directory: ./mobile
-        run: npm run lint
-
-      - name: Type check
-        working-directory: ./mobile
-        run: npm run type-check
-
-      - name: Run unit tests with coverage
-        working-directory: ./mobile
-        run: npm test -- --coverage
-
-      - name: Check coverage threshold
-        working-directory: ./mobile
-        run: |
-          npm run test:coverage || (echo "❌ Coverage below 100% threshold" && exit 1)
-
-      - name: Upload coverage
-        if: always()
-        uses: codecov/codecov-action@v4
-        with:
-          files: ./mobile/coverage/lcov.info
-          flags: mobile
-          name: mobile-tests
-          fail_ci_if_error: true
-
-  e2e-tests:
-    name: E2E Tests (Docker)
-    runs-on: ubuntu-latest
-    needs: [test, mobile-tests]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Run E2E tests in Docker
-        run: |
-          docker-compose -f docker-compose.test.yml up --build test-runner
-        env:
-          DYNAMODB_ENDPOINT: http://dynamodb-local:8000
-          S3_ENDPOINT: http://minio:9000
-          S3_ACCESS_KEY: minioadmin
-          S3_SECRET_KEY: minioadmin
-          S3_FORCE_PATH_STYLE: 'true'
-          AWS_REGION: us-east-1
-          AWS_ACCESS_KEY_ID: test
-          AWS_SECRET_ACCESS_KEY: test
-
-      - name: Upload test results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: e2e-test-results
-          path: |
-            test-results/
-            coverage/
-          retention-days: 7
-
-      - name: Cleanup Docker
-        if: always()
-        run: docker-compose -f docker-compose.test.yml down -v
-
-  build:
-    name: Build
-    runs-on: ubuntu-latest
-    needs: [test, mobile-tests, e2e-tests]
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build Lambda functions
-        run: npm run build:lambda
-
-      - name: Build frontend
-        run: npm run build:frontend
-
-  deploy-infrastructure:
-    name: Deploy Infrastructure
-    runs-on: ubuntu-latest
-    needs: build
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: '1.5.0'
+          terraform_version: '1.6.0'
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Terraform Init
-        working-directory: infrastructure
-        run: terraform init
-
-      - name: Terraform Plan
-        working-directory: infrastructure
-        run: terraform plan
-
-      - name: Terraform Apply
-        working-directory: infrastructure
-        run: terraform apply -auto-approve
-
-  deploy-lambda:
-    name: Deploy Lambda Functions
-    runs-on: ubuntu-latest
-    needs: deploy-infrastructure
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-          cache: 'npm'
+      - name: Load configuration from secrets
+        run: |
+          # Export all secrets as environment variables
+          export AWS_REGION="${{ secrets.AWS_REGION || 'us-east-1' }}"
+          export PROJECT_NAME="${{ secrets.PROJECT_NAME || 'dental-hospital-system' }}"
+          export ENVIRONMENT="${{ env.ENVIRONMENT }}"
+          export JWT_SECRET="${{ secrets.JWT_SECRET }}"
+          export ADMIN_PASSWORD="${{ secrets.ADMIN_PASSWORD }}"
+          export TERRAFORM_STATE_BUCKET="${{ secrets.TERRAFORM_STATE_BUCKET }}"
+          export API_CUSTOM_DOMAIN="${{ secrets.API_CUSTOM_DOMAIN }}"
+          export ROUTE53_HOSTED_ZONE_ID="${{ secrets.ROUTE53_HOSTED_ZONE_ID }}"
+          export ACM_CERTIFICATE_ARN="${{ secrets.ACM_CERTIFICATE_ARN }}"
+          export CLOUDFRONT_CUSTOM_DOMAIN="${{ secrets.CLOUDFRONT_CUSTOM_DOMAIN }}"
+          export CLOUDFRONT_ROUTE53_ZONE_ID="${{ secrets.CLOUDFRONT_ROUTE53_ZONE_ID }}"
+          export CLOUDFRONT_ACM_CERTIFICATE_ARN="${{ secrets.CLOUDFRONT_ACM_CERTIFICATE_ARN }}"
+          
+          # Save to .env for deploy script compatibility
+          cat > .env << EOF
+          AWS_REGION=$AWS_REGION
+          AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          PROJECT_NAME=$PROJECT_NAME
+          ENVIRONMENT=$ENVIRONMENT
+          JWT_SECRET=$JWT_SECRET
+          ADMIN_PASSWORD=$ADMIN_PASSWORD
+          TERRAFORM_STATE_BUCKET=$TERRAFORM_STATE_BUCKET
+          API_CUSTOM_DOMAIN=$API_CUSTOM_DOMAIN
+          ROUTE53_HOSTED_ZONE_ID=$ROUTE53_HOSTED_ZONE_ID
+          ACM_CERTIFICATE_ARN=$ACM_CERTIFICATE_ARN
+          CLOUDFRONT_CUSTOM_DOMAIN=$CLOUDFRONT_CUSTOM_DOMAIN
+          CLOUDFRONT_ROUTE53_ZONE_ID=$CLOUDFRONT_ROUTE53_ZONE_ID
+          CLOUDFRONT_ACM_CERTIFICATE_ARN=$CLOUDFRONT_ACM_CERTIFICATE_ARN
+          EOF
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Lambda functions
-        run: npm run build:lambda
+      - name: Run deployment
+        run: |
+          chmod +x scripts/deploy-all.sh
+          ./scripts/deploy-all.sh --skip-admin
+        env:
+          GITHUB_ACTIONS: true
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Save deployment outputs
+        if: success()
+        run: |
+          echo "API_URL=$(cat api-url.txt 2>/dev/null || echo '')" >> $GITHUB_OUTPUT
+          echo "Deployment completed successfully" >> $GITHUB_STEP_SUMMARY
 
-      - name: Deploy Lambda functions
-        run: ./scripts/deploy-lambda.sh
-
+      - name: Deployment summary
+        if: success()
+        run: |
+          echo "## 🚀 Deployment Successful" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f api-url.txt ]; then
+            echo "**API URL:** $(cat api-url.txt)" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Environment:** ${{ env.ENVIRONMENT }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Region:** ${{ env.AWS_REGION }}" >> $GITHUB_STEP_SUMMARY

@@ -40,10 +40,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_ROOT"
 
-# Load from .env if exists, otherwise use defaults
-if [ -f ".env" ]; then
-  export $(grep -v '^#' .env | grep -v '^$' | xargs)
-fi
+# Load configuration (from GitHub Secrets, .env, or defaults)
+source "$SCRIPT_DIR/load-config.sh"
 
 PROJECT_NAME="${PROJECT_NAME:-dental-hospital-system}"
 ENVIRONMENT="${ENVIRONMENT:-production}"

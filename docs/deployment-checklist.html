@@ -348,13 +348,79 @@
     <script>
         const checklistData = {
             "📚 Read Documentation First": {
-                "Read Beginner's Guide": {
-                    description: "📖 Read DEPLOYMENT_GUIDE_BEGINNER.md for complete step-by-step instructions. This checklist assumes you've read the guide.",
-                    command: "# Open: docs/DEPLOYMENT_GUIDE_BEGINNER.md\n# Read through all sections before starting"
+                "Read Deployment Guide": {
+                    description: "📖 Read DEPLOYMENT.md for complete deployment instructions. This consolidated guide includes everything: quick start, interactive deployment, GitHub Secrets, custom domains, and troubleshooting.",
+                    command: "# Open: docs/DEPLOYMENT.md\n# Read through all sections before starting\n# Sections: Quick Start, Prerequisites, Interactive Deployment, GitHub Secrets, Custom Domain, Manual Deployment, Migration, Troubleshooting"
                 },
                 "Understand What You're Deploying": {
-                    description: "Understand: AWS = Cloud platform, Terraform = Infrastructure tool, Lambda = Code execution, DynamoDB = Database, S3 = File storage",
-                    command: "# Review the 'Understanding the Basics' section in the beginner's guide"
+                    description: "Understand: AWS = Cloud platform, Terraform = Infrastructure tool, Lambda = Code execution, DynamoDB = Database, S3 = File storage, API Gateway = REST API",
+                    command: "# Review the Prerequisites section in DEPLOYMENT.md\n# Key concepts: Serverless architecture, Infrastructure as Code, CI/CD"
+                },
+                "Choose Deployment Method": {
+                    description: "Choose your deployment method: 1) Interactive (npm run deploy) - Recommended for beginners, 2) GitHub Secrets (CI/CD) - For automated deployments, 3) Manual - For experienced developers",
+                    command: "# Review Quick Start section in DEPLOYMENT.md\n# Interactive: npm run deploy (easiest)\n# GitHub Secrets: For CI/CD pipelines\n# Manual: Full control"
+                }
+            },
+            "🚀 Interactive Deployment (Recommended)": {
+                "Configure AWS CLI": {
+                    description: "Configure AWS CLI with your credentials. Run: aws configure, then enter Access Key ID, Secret Access Key, region (us-east-1), and output format (json).",
+                    command: "aws configure\n# Enter:\n# AWS Access Key ID: AKIA...\n# AWS Secret Access Key: wJalr...\n# Default region: us-east-1\n# Default output: json"
+                },
+                "Run Interactive Deployment": {
+                    description: "Run the interactive deployment script. It will ask for all configuration and deploy everything automatically. Takes 20-35 minutes.",
+                    command: "npm run deploy\n\n# OR:\n./scripts/deploy-interactive.sh\n\n# The script will:\n# 1. Ask for AWS region\n# 2. Ask for project name\n# 3. Ask for JWT secret (or generates)\n# 4. Ask for admin password\n# 5. Ask for Terraform state bucket\n# 6. Ask for custom domains (optional)\n# 7. Deploy everything automatically"
+                },
+                "Save Configuration": {
+                    description: "The script saves all configuration to .env file. Review the file to ensure all values are correct.",
+                    command: "cat .env\n# Should show:\n# AWS_REGION=us-east-1\n# PROJECT_NAME=dental-hospital-system\n# JWT_SECRET=...\n# ADMIN_PASSWORD=...\n# etc."
+                },
+                "Verify Deployment": {
+                    description: "After deployment completes, verify API Gateway URL and admin credentials are displayed. Save these securely!",
+                    command: "cat api-url.txt\n# Should show API Gateway URL\n# Admin credentials displayed in terminal\n# Mobile: 9999999999\n# Password: (your password)"
+                }
+            },
+            "🔐 GitHub Secrets Setup (CI/CD)": {
+                "Navigate to Repository Settings": {
+                    description: "Go to GitHub repository settings to add secrets. Path: Repository → Settings → Secrets and variables → Actions.",
+                    command: "# Go to:\n# https://github.com/YOUR_USERNAME/YOUR_REPO/settings/secrets/actions\n# Click 'New repository secret'"
+                },
+                "Add AWS Credentials": {
+                    description: "Add AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY secrets. Get these from AWS IAM → Users → Security Credentials.",
+                    command: "# Add secrets:\n# AWS_ACCESS_KEY_ID: AKIA...\n# AWS_SECRET_ACCESS_KEY: wJalr...\n# ⚠️ Copy secret key immediately - you won't see it again!"
+                },
+                "Add Core Configuration": {
+                    description: "Add JWT_SECRET (generate: openssl rand -base64 32), ADMIN_PASSWORD, AWS_REGION (optional), PROJECT_NAME (optional).",
+                    command: "# Generate JWT secret:\nopenssl rand -base64 32\n\n# Add secrets:\n# JWT_SECRET: (generated secret)\n# ADMIN_PASSWORD: YourSecurePassword123!\n# AWS_REGION: us-east-1 (optional)\n# PROJECT_NAME: dental-hospital-system (optional)"
+                },
+                "Add Custom Domain Secrets (Optional)": {
+                    description: "If using custom domains, add: API_CUSTOM_DOMAIN, ROUTE53_HOSTED_ZONE_ID, ACM_CERTIFICATE_ARN, CLOUDFRONT_CUSTOM_DOMAIN, etc.",
+                    command: "# Optional secrets for custom domain:\n# API_CUSTOM_DOMAIN: api.rghs-dental.info\n# ROUTE53_HOSTED_ZONE_ID: Z1234567890ABC\n# ACM_CERTIFICATE_ARN: arn:aws:acm:...\n# CLOUDFRONT_CUSTOM_DOMAIN: cdn.rghs-dental.info\n# etc."
+                },
+                "Deploy via GitHub Actions": {
+                    description: "Deploy via GitHub Actions. Push to main branch (auto-deploys) OR go to Actions → Deploy to AWS → Run workflow.",
+                    command: "# Option 1: Push to main\ngit push origin main\n# Auto-deploys using GitHub Secrets\n\n# Option 2: Manual trigger\n# Go to: Actions → Deploy to AWS → Run workflow"
+                }
+            },
+            "🌐 Custom Domain Setup (Optional)": {
+                "Create Route53 Hosted Zone": {
+                    description: "Create Route53 hosted zone for your domain. Go to Route53 Console → Create hosted zone → Enter domain name (e.g., rghs-dental.info).",
+                    command: "# Go to: https://console.aws.amazon.com/route53/\n# Create hosted zone:\n# Domain name: rghs-dental.info\n# Type: Public hosted zone\n# Save Hosted Zone ID: Z1234567890ABC"
+                },
+                "Request ACM Certificates": {
+                    description: "Request ACM certificates in us-east-1 region. One for API Gateway (api.rghs-dental.info) and one for CloudFront (cdn.rghs-dental.info). Use DNS validation.",
+                    command: "# Go to: https://console.aws.amazon.com/acm/home?region=us-east-1\n# Request certificate:\n# Domain: api.rghs-dental.info\n# Validation: DNS validation\n# Create record in Route53\n# Wait 5-30 minutes for validation\n# Save Certificate ARN"
+                },
+                "Update Domain Nameservers": {
+                    description: "Update your domain registrar's nameservers with Route53 nameservers. This allows Route53 to manage DNS for your domain.",
+                    command: "# Get Route53 nameservers:\n# Route53 Console → Hosted Zone → NS record\n# Copy all 4 nameservers\n# Update at your domain registrar\n# Wait 24-48 hours for DNS propagation"
+                },
+                "Configure During Deployment": {
+                    description: "When running npm run deploy, enter custom domain details: API domain, Route53 zone ID, ACM certificate ARN, CloudFront domain (optional).",
+                    command: "# During npm run deploy:\n# API Custom Domain: api.rghs-dental.info\n# Route53 Hosted Zone ID: Z1234567890ABC\n# ACM Certificate ARN: arn:aws:acm:...\n# CloudFront Custom Domain: cdn.rghs-dental.info (optional)\n# etc."
+                },
+                "Verify DNS Records": {
+                    description: "After deployment, verify DNS records were created. Check with: dig api.rghs-dental.info and dig cdn.rghs-dental.info",
+                    command: "dig api.rghs-dental.info\n# Should show AWS resources\n\ndig cdn.rghs-dental.info\n# Should show CloudFront distribution"
                 }
             },
             "Prerequisites": {
@@ -518,10 +584,32 @@
                 }
             },
             },
+            "🔄 Migration (New AWS Account)": {
+                "Export Data from Old Account": {
+                    description: "Export all data from old AWS account. Run migration export script with old account credentials configured.",
+                    command: "export AWS_PROFILE=old-account\n./scripts/migrate-export-data.sh\n# Creates migration-export-YYYYMMDD-HHMMSS directory\n# Exports DynamoDB tables and S3 objects"
+                },
+                "Deploy Infrastructure in New Account": {
+                    description: "Deploy infrastructure in new AWS account. Use migration mode to skip infrastructure deployment if already exists.",
+                    command: "export AWS_PROFILE=new-account\nnpm run deploy:all:migration\n# OR:\n./scripts/deploy-all.sh --migration --skip-admin"
+                },
+                "Import Data to New Account": {
+                    description: "Import all data to new AWS account. This preserves all dates and timestamps exactly as they were.",
+                    command: "./scripts/migrate-import-data.sh ./migration-export-YYYYMMDD-HHMMSS\n# Imports DynamoDB tables (preserves dates)\n# Syncs S3 objects (preserves metadata)"
+                },
+                "Verify Migration": {
+                    description: "Verify migration was successful. Compare item counts and sample data between old and new accounts.",
+                    command: "./scripts/migrate-verify.sh ./migration-export-YYYYMMDD-HHMMSS\n# Compares:\n# - DynamoDB table item counts\n# - S3 bucket sizes\n# - Sample timestamps (dates preserved)"
+                },
+                "Update Applications": {
+                    description: "Update frontend/mobile applications with new API URL. Test login and verify all data is accessible.",
+                    command: "cat api-url.txt\n# Update API_BASE_URL in:\n# - Frontend .env\n# - Mobile app config\n# Test login and verify data"
+                }
+            },
             "Application Deployment": {
                 "Build TypeScript": {
-                    description: "Build Lambda functions: npm run build:lambda",
-                    command: "cd ..\nnpm run build:lambda\n# Creates dist/lambda/ directory"
+                    description: "Build Lambda functions: npm run build:lambda. Creates dist/lambda/ directory with compiled JavaScript.",
+                    command: "cd ..\nnpm run build:lambda\n# Creates dist/lambda/ directory\n# Compiles TypeScript to JavaScript"
                 },
                 "Verify Build": {
                     description: "Verify build output exists: ls -la dist/lambda/",

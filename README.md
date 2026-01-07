@@ -142,40 +142,33 @@ dental-hospital-system/
 
 ### Deployment
 
-**🚀 One-Click Deployment** (Recommended):
+**🚀 Quick Start** (Recommended):
 ```bash
-# For new setup
-npm run deploy:all
+# Interactive deployment (asks for all configuration)
+npm run deploy
 
-# For migration (new AWS account)
-npm run deploy:all:migration
+# OR non-interactive
+npm run deploy:all
 ```
 
-This single command will:
-- ✅ Check all prerequisites
-- ✅ Set up Terraform backend
-- ✅ Deploy all infrastructure
-- ✅ Build and deploy Lambda functions
-- ✅ Deploy API Gateway
-- ✅ Create admin user
-- ✅ Verify deployment
-
-**📖 Deployment Guides**:
-- 🚀 [One-Click Deployment](./docs/ONE_CLICK_DEPLOYMENT.md) - **Start here!** Automated deployment script
-- 📖 [Beginner's Guide](./docs/DEPLOYMENT_GUIDE_BEGINNER.md) - Complete step-by-step for beginners
-- ⚡ [Quick Start](./docs/DEPLOYMENT_QUICK_START.md) - For experienced developers
-- 📘 [Standard Guide](./docs/DEPLOYMENT_GUIDE.md) - Standard deployment instructions
+**📖 Complete Deployment Guide**:
+- 📘 [DEPLOYMENT.md](./docs/DEPLOYMENT.md) - **Complete consolidated guide** with everything you need:
+  - Quick start (interactive deployment)
+  - Prerequisites and setup
+  - GitHub Secrets setup (CI/CD)
+  - Custom domain configuration
+  - Manual deployment steps
+  - Migration guide
+  - Troubleshooting
 - 🔄 [Migration Guide](./docs/MIGRATION_GUIDE.md) - Migrate to new AWS account (free tier strategy)
 - 📋 [Interactive Checklist](./docs/deployment-checklist.html) - Track your deployment progress
-- 📚 [Documentation Index](./docs/DEPLOYMENT_INDEX.md) - Choose the right guide for you
 
-**Manual deployment** (if needed):
-```bash
-cd infrastructure
-terraform init
-terraform plan
-terraform apply
-```
+**What Gets Deployed**:
+- ✅ All AWS infrastructure (DynamoDB, Lambda, API Gateway, S3, CloudFront)
+- ✅ Application code (Lambda functions)
+- ✅ API Gateway with all routes
+- ✅ Initial admin user
+- ✅ Verification and testing
 
 ## 📚 Documentation
 

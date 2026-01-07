@@ -142,15 +142,24 @@ dental-hospital-system/
 
 ### Deployment
 
-See [DEPLOYMENT_GUIDE.md](./docs/DEPLOYMENT_GUIDE.md) for detailed deployment instructions.
+**👋 New to AWS and deployment?** Start with the [Beginner's Guide](./docs/DEPLOYMENT_GUIDE_BEGINNER.md)!
 
-Quick deployment:
+**Available Deployment Guides**:
+- 📖 [Beginner's Guide](./docs/DEPLOYMENT_GUIDE_BEGINNER.md) - Complete step-by-step for beginners (assumes zero knowledge)
+- ⚡ [Quick Start](./docs/DEPLOYMENT_QUICK_START.md) - For experienced developers
+- 📘 [Standard Guide](./docs/DEPLOYMENT_GUIDE.md) - Standard deployment instructions
+- 📋 [Interactive Checklist](./docs/deployment-checklist.html) - Track your deployment progress
+- 📚 [Documentation Index](./docs/DEPLOYMENT_INDEX.md) - Choose the right guide for you
+
+**Quick deployment** (for experienced users):
 ```bash
 cd infrastructure
 terraform init
 terraform plan
 terraform apply
 ```
+
+**For complete beginners**, see [DEPLOYMENT_GUIDE_BEGINNER.md](./docs/DEPLOYMENT_GUIDE_BEGINNER.md) for detailed instructions.
 
 ## 📚 Documentation
 

@@ -68,7 +68,7 @@ output "api_gateway_id" {
 
 output "api_gateway_url" {
   description = "URL of the API Gateway"
-  value       = "https://${aws_api_gateway_rest_api.main.id}.execute-api.${data.aws_region.current.name}.amazonaws.com/${var.api_gateway_stage_name}"
+  value       = var.api_custom_domain != "" && var.api_acm_certificate_arn != "" ? "https://${var.api_custom_domain}" : "https://${aws_api_gateway_rest_api.main.id}.execute-api.${data.aws_region.current.name}.amazonaws.com/${var.api_gateway_stage_name}"
 }
 
 output "s3_images_bucket_name" {

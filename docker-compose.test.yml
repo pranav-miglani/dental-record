@@ -1,0 +1,114 @@
+version: '3.8'
+
+services:
+  # DynamoDB Local for testing
+  dynamodb-local:
+    image: amazon/dynamodb-local:latest
+    container_name: dental-hospital-dynamodb-test
+    ports:
+      - "8000:8000"
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-inMemory"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000 || exit 1"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+      start_period: 10s
+    networks:
+      - dental-test-network
+
+  # Local S3 emulator (MinIO)
+  minio:
+    image: minio/minio:latest
+    container_name: dental-hospital-minio-test
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+      start_period: 10s
+    networks:
+      - dental-test-network
+    volumes:
+      - minio-data:/data
+
+  # LocalStack for AWS services emulation (optional, for more complete AWS emulation)
+  localstack:
+    image: localstack/localstack:latest
+    container_name: dental-hospital-localstack-test
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3,sns,lambda,apigateway
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - DOCKER_HOST=unix:///var/run/docker.sock
+    volumes:
+      - localstack-data:/tmp/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4566/_localstack/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - dental-test-network
+
+  # Test runner service (runs tests)
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: dental-hospital-test-runner
+    depends_on:
+      dynamodb-local:
+        condition: service_started
+      minio:
+        condition: service_started
+    environment:
+      - NODE_ENV=test
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=test
+      - AWS_SECRET_ACCESS_KEY=test
+      - DYNAMODB_ENDPOINT=http://dynamodb-local:8000
+      - S3_ENDPOINT=http://minio:9000
+      - S3_ACCESS_KEY=minioadmin
+      - S3_SECRET_KEY=minioadmin
+      - S3_FORCE_PATH_STYLE=true
+      - USERS_TABLE_NAME=test-users
+      - PATIENTS_TABLE_NAME=test-patients
+      - PROCEDURES_TABLE_NAME=test-procedures
+      - PROCEDURE_STEPS_TABLE_NAME=test-procedure-steps
+      - IMAGES_TABLE_NAME=test-images
+      - CONSENT_TABLE_NAME=test-consent
+      - AUDIT_LOGS_TABLE_NAME=test-audit-logs
+      - USER_PATIENT_MAPPING_TABLE_NAME=test-user-patient-mapping
+      - IMAGES_BUCKET=test-images-bucket
+      - ARCHIVE_BUCKET=test-archive-bucket
+      - JWT_SECRET=test-secret-key-for-local-testing
+      - JWT_ACCESS_EXPIRY=30m
+      - JWT_REFRESH_EXPIRY=30d
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/coverage
+    working_dir: /app
+    networks:
+      - dental-test-network
+    command: sh -c "npm run docker:setup:container && npm run test:e2e:docker"
+
+networks:
+  dental-test-network:
+    driver: bridge
+
+volumes:
+  minio-data:
+  localstack-data:
+

@@ -11,7 +11,7 @@ module.exports = {
     '^.+\\.ts$': 'ts-jest',
   },
   setupFiles: ['<rootDir>/jest.setup.js'],
-  setupFilesAfterEnv: ['<rootDir>/setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/setup.ts', '<rootDir>/../docker-setup.ts'],
   testTimeout: 60000,
   verbose: true,
   testEnvironmentOptions: {

@@ -36,15 +36,93 @@ jobs:
       - name: Run unit tests
         run: npm run test:unit
 
+      - name: Start DynamoDB Local
+        run: |
+          docker run -d \
+            --name dynamodb-local \
+            -p 8000:8000 \
+            amazon/dynamodb-local:latest \
+            -jar DynamoDBLocal.jar -sharedDb -inMemory
+
+      - name: Wait for DynamoDB
+        run: |
+          for i in {1..30}; do
+            curl -f http://localhost:8000 > /dev/null 2>&1 && break || sleep 1
+          done
+
+      - name: Setup DynamoDB tables
+        run: |
+          export DYNAMODB_ENDPOINT=http://localhost:8000
+          export AWS_REGION=us-east-1
+          export AWS_ACCESS_KEY_ID=test
+          export AWS_SECRET_ACCESS_KEY=test
+          chmod +x scripts/setup-docker-tables.sh
+          ./scripts/setup-docker-tables.sh
+
       - name: Run integration tests
         run: npm run test:integration
         env:
+          DYNAMODB_ENDPOINT: http://localhost:8000
           AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+
+      - name: Cleanup DynamoDB
+        if: always()
+        run: docker stop dynamodb-local && docker rm dynamodb-local || true
+
+  e2e-tests:
+    name: E2E Tests (Docker)
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Run E2E tests in Docker
+        run: |
+          docker-compose -f docker-compose.test.yml up --build test-runner
+        env:
+          DYNAMODB_ENDPOINT: http://dynamodb-local:8000
+          S3_ENDPOINT: http://minio:9000
+          S3_ACCESS_KEY: minioadmin
+          S3_SECRET_KEY: minioadmin
+          S3_FORCE_PATH_STYLE: 'true'
+          AWS_REGION: us-east-1
+          AWS_ACCESS_KEY_ID: test
+          AWS_SECRET_ACCESS_KEY: test
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-results
+          path: |
+            test-results/
+            coverage/
+          retention-days: 7
+
+      - name: Cleanup Docker
+        if: always()
+        run: docker-compose -f docker-compose.test.yml down -v
 
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: test
+    needs: [test, e2e-tests]
 
     steps:
       - name: Checkout code
@@ -73,15 +151,15 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: '1.5.0'
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -122,7 +200,7 @@ jobs:
         run: npm run build:lambda
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

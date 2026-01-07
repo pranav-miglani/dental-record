@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  # DynamoDB Local for local development
+  dynamodb-local:
+    image: amazon/dynamodb-local:latest
+    container_name: dental-hospital-dynamodb
+    ports:
+      - "8000:8000"
+    command: ["-jar", "DynamoDBLocal.jar", "-sharedDb", "-optimizeDbBeforeStartup"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000 || exit 1"]
+      interval: 5s
+      timeout: 2s
+      retries: 5
+    networks:
+      - dental-network
+    volumes:
+      - dynamodb-data:/home/dynamodblocal/data
+
+  # MinIO for S3 emulation
+  minio:
+    image: minio/minio:latest
+    container_name: dental-hospital-minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 2s
+      retries: 5
+    networks:
+      - dental-network
+    volumes:
+      - minio-data:/data
+
+networks:
+  dental-network:
+    driver: bridge
+
+volumes:
+  dynamodb-data:
+  minio-data:
+

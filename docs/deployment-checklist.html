@@ -347,121 +347,176 @@
 
     <script>
         const checklistData = {
+            "📚 Read Documentation First": {
+                "Read Beginner's Guide": {
+                    description: "📖 Read DEPLOYMENT_GUIDE_BEGINNER.md for complete step-by-step instructions. This checklist assumes you've read the guide.",
+                    command: "# Open: docs/DEPLOYMENT_GUIDE_BEGINNER.md\n# Read through all sections before starting"
+                },
+                "Understand What You're Deploying": {
+                    description: "Understand: AWS = Cloud platform, Terraform = Infrastructure tool, Lambda = Code execution, DynamoDB = Database, S3 = File storage",
+                    command: "# Review the 'Understanding the Basics' section in the beginner's guide"
+                }
+            },
             "Prerequisites": {
                 "Install Node.js": {
-                    description: "Install Node.js version 20 or higher. Check installation with: node --version",
-                    command: "node --version\n# Should show v20.x.x or higher"
+                    description: "Install Node.js version 20 or higher. Mac: brew install node@20, Windows: Download from nodejs.org, Linux: Use package manager. Verify with: node --version",
+                    command: "# Mac:\nbrew install node@20\n\n# Windows:\n# Download from https://nodejs.org/\n\n# Linux:\ncurl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -\nsudo apt-get install -y nodejs\n\n# Verify:\nnode --version\n# Should show: v20.x.x"
                 },
                 "Install AWS CLI": {
-                    description: "Install AWS CLI version 2.0 or higher. Verify with: aws --version",
-                    command: "aws --version\n# Should show aws-cli/2.x.x"
+                    description: "Install AWS CLI version 2.0 or higher. Mac: brew install awscli, Windows: Download MSI installer, Linux: Use curl script. Verify with: aws --version",
+                    command: "# Mac:\nbrew install awscli\n\n# Windows:\n# Download from https://awscli.amazonaws.com/AWSCLIV2.msi\n\n# Linux:\ncurl \"https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip\" -o \"awscliv2.zip\"\nunzip awscliv2.zip\nsudo ./aws/install\n\n# Verify:\naws --version\n# Should show: aws-cli/2.x.x"
                 },
                 "Install Terraform": {
-                    description: "Install Terraform version 1.5 or higher. Verify with: terraform version",
-                    command: "terraform version\n# Should show Terraform v1.5.x or higher"
+                    description: "Install Terraform version 1.5 or higher. Mac: brew install terraform, Windows: Download from terraform.io, Linux: Download and unzip. Verify with: terraform version",
+                    command: "# Mac:\nbrew install terraform\n\n# Windows:\n# Download from https://www.terraform.io/downloads\n\n# Linux:\nwget https://releases.hashicorp.com/terraform/1.6.0/terraform_1.6.0_linux_amd64.zip\nunzip terraform_1.6.0_linux_amd64.zip\nsudo mv terraform /usr/local/bin/\n\n# Verify:\nterraform version\n# Should show: Terraform v1.5.x or higher"
                 },
                 "Install Git": {
-                    description: "Install Git if not already installed. Verify with: git --version",
-                    command: "git --version"
+                    description: "Install Git if not already installed. Mac: brew install git, Windows: Download from git-scm.com, Linux: sudo apt install git. Verify with: git --version",
+                    command: "# Mac:\nbrew install git\n\n# Windows:\n# Download from https://git-scm.com/download/win\n\n# Linux:\nsudo apt install git\n\n# Verify:\ngit --version"
                 },
                 "Install Docker (Optional)": {
-                    description: "Install Docker for local DynamoDB testing. Verify with: docker --version",
-                    command: "docker --version"
+                    description: "Install Docker for local DynamoDB testing. Mac/Windows: Download Docker Desktop, Linux: Use curl script. Verify with: docker --version",
+                    command: "# Mac/Windows:\n# Download Docker Desktop from https://www.docker.com/products/docker-desktop\n\n# Linux:\ncurl -fsSL https://get.docker.com -o get-docker.sh\nsudo sh get-docker.sh\n\n# Verify:\ndocker --version"
+                },
+                "Verify All Installations": {
+                    description: "Run all version commands to verify everything is installed correctly.",
+                    command: "node --version\nnpm --version\naws --version\nterraform version\ngit --version\ndocker --version\n# All should show version numbers"
                 }
             },
             "AWS Account Setup": {
                 "Create AWS Account": {
-                    description: "Create AWS account at aws.amazon.com. Complete registration and verify email.",
-                    command: "# Go to https://aws.amazon.com/\n# Click 'Create an AWS Account'\n# Complete registration process"
+                    description: "Create AWS account at aws.amazon.com. Steps: 1) Go to aws.amazon.com, 2) Click 'Create an AWS Account', 3) Enter email/password, 4) Provide payment info (free tier credits available), 5) Verify phone, 6) Choose Basic support plan. Wait for activation email (5-10 minutes).",
+                    command: "# Step-by-step:\n# 1. Go to https://aws.amazon.com/\n# 2. Click 'Create an AWS Account' (top right)\n# 3. Enter email and choose account name\n# 4. Create password\n# 5. Enter contact information\n# 6. Enter credit card (won't be charged for free tier)\n# 7. Verify phone number\n# 8. Choose 'Basic Plan' (Free)\n# 9. Wait for activation email (5-10 minutes)"
                 },
                 "Create IAM User": {
-                    description: "Create IAM user 'dental-hospital-admin' with AdministratorAccess policy (for initial setup).",
-                    command: "# AWS Console → IAM → Users → Create user\n# Username: dental-hospital-admin\n# Attach AdministratorAccess policy"
+                    description: "Create IAM user 'dental-hospital-admin' with AdministratorAccess policy. Steps: 1) AWS Console → Search 'IAM', 2) Click 'Users' → 'Create user', 3) Username: dental-hospital-admin, 4) Click 'Next', 5) Select 'Attach policies directly', 6) Search 'AdministratorAccess', 7) Check the box, 8) Click 'Create user'.",
+                    command: "# Detailed steps:\n# 1. Login to https://console.aws.amazon.com/\n# 2. Search 'IAM' in top search bar\n# 3. Click 'Users' in left menu\n# 4. Click 'Create user' button\n# 5. Username: dental-hospital-admin\n# 6. Click 'Next'\n# 7. Select 'Attach policies directly'\n# 8. Search 'AdministratorAccess'\n# 9. Check the box\n# 10. Click 'Next' then 'Create user'"
                 },
-                "Save Access Keys": {
-                    description: "Save Access Key ID and Secret Access Key immediately. You won't see the secret again!",
-                    command: "# IMPORTANT: Save these credentials securely\n# Access Key ID: [Your Key]\n# Secret Access Key: [Your Secret]"
+                "Create Access Keys": {
+                    description: "Create access keys for the IAM user. Steps: 1) Click on the user, 2) Go to 'Security credentials' tab, 3) Click 'Create access key', 4) Select 'Command Line Interface (CLI)', 5) Check confirmation, 6) Click 'Next', 7) ⚠️ COPY BOTH KEYS IMMEDIATELY - You can only see secret once!",
+                    command: "# Steps:\n# 1. Click on 'dental-hospital-admin' user\n# 2. Go to 'Security credentials' tab\n# 3. Click 'Create access key'\n# 4. Select 'Command Line Interface (CLI)'\n# 5. Check confirmation box\n# 6. Click 'Next'\n# 7. ⚠️ COPY BOTH:\n#    - Access Key ID: AKIA...\n#    - Secret Access Key: wJalr...\n# 8. Save in a text file (aws-credentials.txt)\n# 9. Click 'Done'"
+                },
+                "Save Access Keys Securely": {
+                    description: "⚠️ CRITICAL: Save Access Key ID and Secret Access Key in a secure file. You won't see the secret key again! Create aws-credentials.txt file (DO NOT commit to git).",
+                    command: "# Create file:\ncat > aws-credentials.txt << EOF\nAccess Key ID: AKIA...\nSecret Access Key: wJalr...\nEOF\n\n# ⚠️ DO NOT commit this file to git!\n# It's already in .gitignore"
                 },
                 "Configure AWS CLI": {
-                    description: "Configure AWS CLI with your credentials using: aws configure",
-                    command: "aws configure\n# Enter Access Key ID\n# Enter Secret Access Key\n# Default region: us-east-1\n# Default output: json"
+                    description: "Configure AWS CLI with your credentials. Run: aws configure, then enter: 1) Access Key ID (from saved file), 2) Secret Access Key (from saved file), 3) Default region: us-east-1, 4) Default output: json. Press Enter after each.",
+                    command: "aws configure\n\n# You'll be prompted for:\n# AWS Access Key ID [None]: AKIA... (paste from aws-credentials.txt)\n# AWS Secret Access Key [None]: wJalr... (paste from aws-credentials.txt)\n# Default region name [None]: us-east-1\n# Default output format [None]: json\n\n# Press Enter after each entry"
                 },
                 "Verify AWS Configuration": {
-                    description: "Verify AWS CLI is configured correctly: aws sts get-caller-identity",
-                    command: "aws sts get-caller-identity\n# Should return your account ID and user ARN"
+                    description: "Verify AWS CLI is configured correctly. Run: aws sts get-caller-identity. Should return JSON with UserId, Account (12-digit number), and Arn. If you see this, configuration worked!",
+                    command: "aws sts get-caller-identity\n\n# Expected output:\n# {\n#     \"UserId\": \"AIDA...\",\n#     \"Account\": \"123456789012\",\n#     \"Arn\": \"arn:aws:iam::123456789012:user/dental-hospital-admin\"\n# }\n\n# ✅ If you see this, it worked!\n# ❌ If you see an error, check your credentials"
+                },
+                "Choose Unique S3 Bucket Name": {
+                    description: "Choose a unique S3 bucket name. Format: dental-hospital-terraform-state-YOURNAME-2024. Replace YOURNAME with your name/company. S3 bucket names must be globally unique. Write it down!",
+                    command: "# Example names:\n# dental-hospital-terraform-state-john-doe-2024\n# dental-hospital-terraform-state-company-name-2024\n# dental-hospital-terraform-state-yourname-12345\n\n# ⚠️ Write your chosen name down - you'll need it!"
                 },
                 "Create S3 Bucket for Terraform State": {
-                    description: "Create S3 bucket for Terraform state storage. Name must be globally unique.",
-                    command: "aws s3 mb s3://dental-hospital-terraform-state-YOUR-NAME\n# Replace YOUR-NAME with something unique"
+                    description: "Create S3 bucket for Terraform state storage. Replace YOUR-UNIQUE-NAME with your chosen name. If you get 'BucketAlreadyExists' error, choose a different name.",
+                    command: "# Replace YOUR-UNIQUE-NAME with your actual bucket name\naws s3 mb s3://dental-hospital-terraform-state-YOUR-UNIQUE-NAME\n\n# Expected output:\n# make_bucket: dental-hospital-terraform-state-YOUR-UNIQUE-NAME\n\n# ❌ If error 'BucketAlreadyExists': Choose different name"
                 },
                 "Enable S3 Versioning": {
-                    description: "Enable versioning on the Terraform state bucket for recovery.",
-                    command: "aws s3api put-bucket-versioning \\\n  --bucket dental-hospital-terraform-state-YOUR-NAME \\\n  --versioning-configuration Status=Enabled"
+                    description: "Enable versioning on the Terraform state bucket. This allows recovery of previous state files if something goes wrong.",
+                    command: "# Replace YOUR-UNIQUE-NAME with your bucket name\naws s3api put-bucket-versioning \\\n  --bucket dental-hospital-terraform-state-YOUR-UNIQUE-NAME \\\n  --versioning-configuration Status=Enabled\n\n# No output means success!"
                 },
                 "Enable S3 Encryption": {
-                    description: "Enable encryption on the Terraform state bucket.",
-                    command: "aws s3api put-bucket-encryption \\\n  --bucket dental-hospital-terraform-state-YOUR-NAME \\\n  --server-side-encryption-configuration '{\"Rules\":[{\"ApplyServerSideEncryptionByDefault\":{\"SSEAlgorithm\":\"AES256\"}}]}'"
+                    description: "Enable encryption on the Terraform state bucket for security. This encrypts the state file at rest.",
+                    command: "# Replace YOUR-UNIQUE-NAME with your bucket name\naws s3api put-bucket-encryption \\\n  --bucket dental-hospital-terraform-state-YOUR-UNIQUE-NAME \\\n  --server-side-encryption-configuration '{\"Rules\":[{\"ApplyServerSideEncryptionByDefault\":{\"SSEAlgorithm\":\"AES256\"}}]}'\n\n# No output means success!"
+                },
+                "Block S3 Public Access": {
+                    description: "Block public access to the Terraform state bucket. This is a security best practice.",
+                    command: "# Replace YOUR-UNIQUE-NAME with your bucket name\naws s3api put-public-access-block \\\n  --bucket dental-hospital-terraform-state-YOUR-UNIQUE-NAME \\\n  --public-access-block-configuration \\\n    \"BlockPublicAcls=true,IgnorePublicAcls=true,BlockPublicPolicy=true,RestrictPublicBuckets=true\"\n\n# No output means success!"
+                },
+                "Verify S3 Bucket Created": {
+                    description: "Verify the S3 bucket was created successfully. Should see your bucket name in the list.",
+                    command: "aws s3 ls | grep terraform-state\n\n# Expected output:\n# 2024-01-08 00:00:00 dental-hospital-terraform-state-YOUR-UNIQUE-NAME\n\n# ✅ If you see your bucket, it worked!"
                 }
             },
             "Local Development Setup": {
-                "Navigate to Project": {
-                    description: "Navigate to the project directory: cd /Users/apple/repository/dental-hospital-system",
-                    command: "cd /Users/apple/repository/dental-hospital-system\npwd  # Verify location"
+                "Navigate to Project Directory": {
+                    description: "Open Terminal/Command Prompt and navigate to project directory. Mac/Linux: cd /Users/apple/repository/dental-hospital-system, Windows: cd C:\\Users\\YourName\\repository\\dental-hospital-system. Verify with: pwd (Mac/Linux) or cd (Windows).",
+                    command: "# Mac/Linux:\ncd /Users/apple/repository/dental-hospital-system\npwd  # Should show the project path\n\n# Windows:\ncd C:\\Users\\YourName\\repository\\dental-hospital-system\ncd  # Shows current directory\n\n# Verify you're in right place:\nls\n# Should see: package.json, src/, infrastructure/, docs/"
                 },
                 "Install Dependencies": {
-                    description: "Install all Node.js dependencies: npm install",
-                    command: "npm install\n# This may take 2-5 minutes"
-                },
-                "Create .env File": {
-                    description: "Create .env file with AWS_REGION, AWS_ACCOUNT_ID, JWT_SECRET, etc.",
-                    command: "cat > .env << 'EOF'\nAWS_REGION=us-east-1\nAWS_ACCOUNT_ID=YOUR_ACCOUNT_ID\nJWT_SECRET=GENERATE_WITH_openssl_rand\nEOF"
+                    description: "Install all Node.js dependencies. This downloads all code libraries the project needs. Takes 2-5 minutes depending on internet speed. Creates node_modules/ folder with hundreds of packages (this is normal!).",
+                    command: "npm install\n\n# What happens:\n# - Downloads packages from internet\n# - Creates node_modules/ folder\n# - Takes 2-5 minutes\n\n# Expected output:\n# added 1234 packages, and audited 1235 packages in 2m\n\n# ❌ If errors: Check internet, try 'npm cache clean --force' then 'npm install' again"
                 },
                 "Get AWS Account ID": {
-                    description: "Get your AWS Account ID and update .env file.",
-                    command: "aws sts get-caller-identity --query Account --output text\n# Update .env file with this value"
+                    description: "Get your AWS Account ID (12-digit number). This identifies your AWS account. Copy this number - you'll need it for .env file.",
+                    command: "aws sts get-caller-identity --query Account --output text\n\n# Expected output:\n# 123456789012\n\n# ⚠️ Copy this 12-digit number! You'll need it next."
                 },
                 "Generate JWT Secret": {
-                    description: "Generate secure JWT secret: openssl rand -base64 32",
-                    command: "openssl rand -base64 32\n# Copy the output and update .env file"
+                    description: "Generate a secure random string for JWT token encryption. This is like a password that encrypts your authentication tokens. Copy the output - you'll need it for .env file.",
+                    command: "openssl rand -base64 32\n\n# Expected output:\n# aBcDeFgHiJkLmNoPqRsTuVwXyZ1234567890AbCdEf=\n\n# ⚠️ Copy this long string! You'll need it next.\n# This is your JWT_SECRET - keep it secret!"
+                },
+                "Create .env File": {
+                    description: "Create .env file with configuration values. Mac/Linux: Use cat command, Windows: Use Notepad. Replace YOUR_ACCOUNT_ID with 12-digit number from previous step, replace YOUR_JWT_SECRET with generated secret.",
+                    command: "# Mac/Linux:\ncat > .env << 'EOF'\nAWS_REGION=us-east-1\nAWS_ACCOUNT_ID=YOUR_ACCOUNT_ID_HERE\nENVIRONMENT=production\nPROJECT_NAME=dental-hospital-system\nJWT_SECRET=YOUR_JWT_SECRET_HERE\nEOF\n\n# Windows (use Notepad):\n# Create new file named .env\n# Paste:\n# AWS_REGION=us-east-1\n# AWS_ACCOUNT_ID=YOUR_ACCOUNT_ID_HERE\n# ENVIRONMENT=production\n# PROJECT_NAME=dental-hospital-system\n# JWT_SECRET=YOUR_JWT_SECRET_HERE\n# Save in project directory\n\n# Then edit file and replace:\n# YOUR_ACCOUNT_ID_HERE → Your 12-digit account ID\n# YOUR_JWT_SECRET_HERE → Your generated secret"
+                },
+                "Verify .env File": {
+                    description: "Verify .env file was created correctly. Should show your configuration (JWT_SECRET will be visible - that's okay, file is in .gitignore so won't be committed).",
+                    command: "cat .env\n\n# Should show:\n# AWS_REGION=us-east-1\n# AWS_ACCOUNT_ID=123456789012\n# ENVIRONMENT=production\n# PROJECT_NAME=dental-hospital-system\n# JWT_SECRET=aBcDeFgHiJkLmNoPqRsTuVwXyZ...\n\n# ✅ If you see your values, it worked!"
                 },
                 "Verify Project Structure": {
-                    description: "Verify project structure has src/, infrastructure/, tests/ directories.",
-                    command: "ls -la\n# Should see: src/, infrastructure/, tests/, package.json"
+                    description: "Verify project has all required directories. Should see: package.json, src/ (source code), infrastructure/ (Terraform files), tests/ (test files), docs/ (documentation).",
+                    command: "ls -la\n\n# Should see:\n# package.json  ← Project configuration\n# src/          ← Source code\n# infrastructure/ ← Terraform files\n# tests/        ← Test files\n# docs/         ← Documentation\n# .env          ← Your environment file (just created)\n\n# ✅ If you see all these, you're ready!"
+                },
+                "Run Type Check (Optional)": {
+                    description: "Check for code errors. This verifies TypeScript code compiles correctly. If you see errors, they're usually minor and won't block deployment.",
+                    command: "npm run type-check\n\n# Expected: Completes without errors\n# If errors: Usually minor, won't block deployment"
+                },
+                "Run Unit Tests (Optional)": {
+                    description: "Run unit tests to verify code works. Should see 'Tests: X passed'. If tests pass, you're ready to deploy!",
+                    command: "npm run test:unit\n\n# Expected output:\n# PASS tests/unit/auth/AuthService.test.ts\n#   AuthService\n#     login\n#       ✓ should successfully login\n# ...\n# Test Suites: 1 passed, 1 total\n# Tests: 6 passed, 6 total\n\n# ✅ If tests pass, you're ready!"
                 }
             },
             "Infrastructure Deployment": {
-                "Navigate to Infrastructure": {
-                    description: "Navigate to infrastructure directory: cd infrastructure",
-                    command: "cd infrastructure\nls -la  # Should see .tf files"
+                "Navigate to Infrastructure Directory": {
+                    description: "Navigate to infrastructure directory where Terraform files are. Run: cd infrastructure, then verify with: ls -la. Should see files ending in .tf (Terraform configuration files).",
+                    command: "cd infrastructure\n\n# Verify you're in right place:\nls -la\n\n# Should see:\n# main.tf          ← Main configuration\n# variables.tf    ← Variable definitions\n# dynamodb.tf     ← Database tables\n# lambda.tf       ← Lambda functions\n# api-gateway.tf  ← API configuration\n# s3.tf           ← Storage buckets\n# etc."
+                },
+                "Get Your S3 Bucket Name": {
+                    description: "⚠️ IMPORTANT: Get your S3 bucket name from Step 2. You wrote it down earlier. It should be: dental-hospital-terraform-state-YOUR-UNIQUE-NAME. You'll need this for terraform init.",
+                    command: "# Check your saved notes or run:\naws s3 ls | grep terraform-state\n\n# Should show:\n# 2024-01-08 00:00:00 dental-hospital-terraform-state-YOUR-UNIQUE-NAME\n\n# ⚠️ Copy this exact bucket name - you'll need it next!"
                 },
                 "Initialize Terraform": {
-                    description: "Initialize Terraform with S3 backend. Replace YOUR-BUCKET-NAME with your bucket.",
-                    command: "terraform init \\\n  -backend-config=\"bucket=dental-hospital-terraform-state-YOUR-NAME\" \\\n  -backend-config=\"key=dental-hospital/terraform.tfstate\" \\\n  -backend-config=\"region=us-east-1\""
+                    description: "Initialize Terraform with S3 backend. This downloads Terraform plugins and sets up remote state storage. Replace YOUR-UNIQUE-NAME with your actual bucket name. Takes 1-2 minutes. Creates .terraform/ directory.",
+                    command: "# Replace YOUR-UNIQUE-NAME with your actual bucket name!\nterraform init \\\n  -backend-config=\"bucket=dental-hospital-terraform-state-YOUR-UNIQUE-NAME\" \\\n  -backend-config=\"key=dental-hospital/terraform.tfstate\" \\\n  -backend-config=\"region=us-east-1\" \\\n  -backend-config=\"encrypt=true\"\n\n# Expected output:\n# Initializing the backend...\n# Initializing provider plugins...\n# - Finding hashicorp/aws versions matching \"~> 5.0\"...\n# - Installing hashicorp/aws v5.x.x...\n# ...\n# Terraform has been successfully initialized!\n\n# Time: 1-2 minutes\n\n# ❌ If errors:\n# - Check bucket name is correct\n# - Check AWS credentials: aws sts get-caller-identity\n# - Make sure bucket exists: aws s3 ls | grep terraform-state"
                 },
-                "Create terraform.tfvars": {
-                    description: "Create terraform.tfvars file with your configuration values.",
-                    command: "cat > terraform.tfvars << 'EOF'\naws_region = \"us-east-1\"\nenvironment = \"production\"\njwt_secret = \"YOUR_JWT_SECRET\"\nEOF"
+                "Get JWT Secret from .env": {
+                    description: "Get your JWT secret from the .env file you created earlier. You'll need this for terraform.tfvars file.",
+                    command: "# Go back to project root:\ncd ..\n\n# View JWT secret:\ncat .env | grep JWT_SECRET\n\n# Copy the value after the = sign\n# Example: JWT_SECRET=aBcDeFgHiJkLmNoPqRsTuVwXyZ...\n\n# Go back to infrastructure:\ncd infrastructure"
                 },
-                "Validate Terraform": {
-                    description: "Validate Terraform configuration: terraform validate",
-                    command: "terraform validate\n# Should show: Success! The configuration is valid."
+                "Create terraform.tfvars File": {
+                    description: "Create terraform.tfvars file with your configuration. This tells Terraform what values to use. Replace YOUR_JWT_SECRET with the actual secret from .env file.",
+                    command: "# Create the file:\ncat > terraform.tfvars << 'EOF'\naws_region = \"us-east-1\"\nenvironment = \"production\"\nproject_name = \"dental-hospital-system\"\njwt_secret = \"YOUR_JWT_SECRET_HERE\"\njwt_access_expiry = \"30m\"\njwt_refresh_expiry = \"30d\"\nrate_limit_per_user = 15\napi_gateway_stage_name = \"prod\"\nenable_cloudfront = true\nEOF\n\n# Then edit the file:\n# - Open terraform.tfvars in text editor\n# - Replace YOUR_JWT_SECRET_HERE with your actual JWT secret\n# - Save the file"
                 },
-                "Terraform Plan": {
-                    description: "Review what will be created: terraform plan. Review carefully!",
-                    command: "terraform plan\n# Review all resources that will be created\n# Should show ~20-30 resources"
+                "Validate Terraform Configuration": {
+                    description: "Validate Terraform configuration for syntax errors. This checks if your Terraform files are correct before trying to create resources.",
+                    command: "terraform validate\n\n# Expected output:\n# Success! The configuration is valid.\n\n# ❌ If errors:\n# - Read error message carefully\n# - Usually a typo or missing value\n# - Fix the error and try again"
                 },
-                "Terraform Apply": {
-                    description: "⚠️ Apply infrastructure: terraform apply. Type 'yes' when prompted. Takes 10-15 minutes.",
-                    command: "terraform apply\n# Type: yes\n# Wait 10-15 minutes for completion"
+                "Terraform Plan (Review What Will Be Created)": {
+                    description: "Generate execution plan. This shows you EVERYTHING Terraform will create WITHOUT actually creating it. Review carefully! Should show ~20-30 resources: 8 DynamoDB tables, 10+ Lambda functions, 1 API Gateway, 3 S3 buckets, IAM roles, EventBridge rules, CloudFront. Takes 2-3 minutes.",
+                    command: "terraform plan\n\n# What you'll see:\n# - Long list of resources with '+' (will be created)\n# - Review the list carefully\n# - Should see:\n#   + 8 DynamoDB tables\n#   + 10+ Lambda functions\n#   + 1 API Gateway\n#   + 3 S3 buckets\n#   + IAM roles and policies\n#   + EventBridge rules\n#   + CloudFront distribution\n\n# Time: 2-3 minutes\n\n# Optional: Save plan to file\nterraform plan -out=tfplan"
+                },
+                "Terraform Apply (Create Everything)": {
+                    description: "⚠️ WARNING: This creates real AWS resources and may incur costs (though most will be free tier). Apply the infrastructure. Terraform will show the plan again, then ask for confirmation. Type 'yes' and press Enter. Takes 10-15 minutes. You'll see lots of output as resources are created.",
+                    command: "terraform apply\n\n# OR use saved plan:\nterraform apply tfplan\n\n# Terraform will:\n# 1. Show the plan again\n# 2. Ask: 'Do you want to perform these actions?'\n# 3. Type: yes\n# 4. Press Enter\n\n# Expected output:\n# aws_dynamodb_table.users: Creating...\n# aws_dynamodb_table.users: Creation complete after 5s\n# aws_lambda_function.auth_handler: Creating...\n# ...\n# Apply complete! Resources: 25 added, 0 changed, 0 destroyed.\n\n# Time: 10-15 minutes\n\n# ❌ If errors:\n# - Don't panic! Read error message\n# - Common: Rate limiting (wait 1 min, try again)\n# - Permission errors (check IAM user has AdministratorAccess)\n# - Region errors (make sure using us-east-1)"
                 },
                 "Save Terraform Outputs": {
-                    description: "Save Terraform outputs to file for later use.",
-                    command: "terraform output -json > ../terraform-outputs.json\nterraform output  # View outputs"
+                    description: "Save all Terraform outputs (URLs, names, etc.) to a file. These contain important information like API URLs, bucket names, table names that you'll need later.",
+                    command: "# Save all outputs to JSON file:\nterraform output -json > ../terraform-outputs.json\n\n# View outputs in terminal:\nterraform output\n\n# Important outputs you'll see:\n# - api_gateway_url: Your API endpoint URL\n# - images_bucket_name: S3 bucket for images\n# - cloudfront_url: CDN URL for images\n# - dynamodb_table_names: All table names\n# - lambda_functions: All function names"
                 },
                 "Save API Gateway URL": {
-                    description: "Save API Gateway URL for testing: terraform output api_gateway_url",
-                    command: "terraform output api_gateway_url > ../api-url.txt\ncat ../api-url.txt"
+                    description: "⚠️ IMPORTANT: Save API Gateway URL to a file. This is your API endpoint - you'll need it to test the API and for the frontend to connect. Write it down!",
+                    command: "# Save API URL to file:\nterraform output api_gateway_url > ../api-url.txt\n\n# View the URL:\ncat ../api-url.txt\n\n# Expected output:\n# https://abc123xyz.execute-api.us-east-1.amazonaws.com/prod\n\n# ⚠️ SAVE THIS URL! You'll need it:\n# - To test the API\n# - For frontend configuration\n# - For mobile app configuration"
+                },
+                "Verify All Resources Created": {
+                    description: "Verify all AWS resources were created successfully. Check DynamoDB tables, Lambda functions, S3 buckets, API Gateway exist.",
+                    command: "# Check DynamoDB tables:\naws dynamodb list-tables | grep dental-hospital\n# Should see 8 tables\n\n# Check Lambda functions:\naws lambda list-functions | grep dental-hospital\n# Should see 10+ functions\n\n# Check S3 buckets:\naws s3 ls | grep dental-hospital\n# Should see 3 buckets (images, archive, terraform-state)\n\n# Check API Gateway:\naws apigateway get-rest-apis | grep dental-hospital\n# Should see 1 API\n\n# ✅ If you see all resources, infrastructure is deployed!"
                 }
+            },
             },
             "Application Deployment": {
                 "Build TypeScript": {

@@ -1,7 +1,9 @@
 # Deployment Guide - Dental Hospital Records System
-## Complete Step-by-Step Guide for Beginners
+## Complete Step-by-Step Guide
 
-> **Note**: This guide assumes you're new to AWS, Terraform, and serverless deployments. Every step is explained in detail.
+> **👋 New to AWS and deployment?** Check out [DEPLOYMENT_GUIDE_BEGINNER.md](./DEPLOYMENT_GUIDE_BEGINNER.md) for an even more detailed, step-by-step guide written for complete beginners!
+
+> **Note**: This guide assumes basic familiarity with command line and AWS. For complete beginners, see the beginner's guide above.
 
 ---
 

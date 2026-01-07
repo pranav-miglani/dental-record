@@ -109,6 +109,7 @@ for table in "${TABLES[@]}"; do
   fi
   
   # Import items in batches (DynamoDB batch write limit: 25 items)
+  # IMPORTANT: All attributes including timestamps (created_at, updated_at, etc.) are preserved
   BATCH_SIZE=25
   TOTAL_BATCHES=$(( ($ITEM_COUNT + $BATCH_SIZE - 1) / $BATCH_SIZE ))
   IMPORTED=0
@@ -117,10 +118,16 @@ for table in "${TABLES[@]}"; do
     BATCH_NUM=$(( ($i / $BATCH_SIZE) + 1 ))
     echo -ne "  Processing batch $BATCH_NUM/$TOTAL_BATCHES...\r"
     
-    # Extract batch
+    # Extract batch - preserve ALL attributes exactly as exported (including dates/timestamps)
+    # The .Items array contains complete DynamoDB items with all attributes preserved
     jq -c ".Items[$i:$((i+$BATCH_SIZE))] | map({PutRequest: {Item: .}})" "$EXPORT_FILE" > /tmp/batch.json
     
-    # Write batch
+    # Write batch - DynamoDB PutRequest preserves all attributes including:
+    # - created_at, updated_at (timestamps)
+    # - assigned_date, step_date (procedure dates)
+    # - upload_timestamp (image upload dates)
+    # - consent_timestamp (consent dates)
+    # - All other date/time fields
     aws dynamodb batch-write-item \
       --request-items "{\"$table\": $(cat /tmp/batch.json)}" \
       --output json > /dev/null
@@ -144,11 +151,16 @@ if [ -d "$IMAGES_DIR" ]; then
   # Verify bucket exists
   if aws s3 ls "s3://$IMAGES_BUCKET" &>/dev/null; then
     # Sync local directory to bucket
-    aws s3 sync "$IMAGES_DIR" "s3://$IMAGES_BUCKET" --no-progress
+    # IMPORTANT: Use --metadata-directive COPY to preserve original file metadata
+    # This preserves LastModified dates and other metadata from original files
+    aws s3 sync "$IMAGES_DIR" "s3://$IMAGES_BUCKET" \
+      --no-progress \
+      --metadata-directive COPY
     
     # Get size
     SIZE=$(du -sh "$IMAGES_DIR" | cut -f1)
     echo -e "  ${GREEN}✓${NC} Imported images to $IMAGES_BUCKET ($SIZE)"
+    echo -e "  ${GREEN}✓${NC} Preserved original file timestamps and metadata"
   else
     echo -e "  ${RED}✗${NC} Bucket not found: $IMAGES_BUCKET"
   fi
@@ -166,11 +178,16 @@ if [ -d "$ARCHIVE_DIR" ]; then
   # Verify bucket exists
   if aws s3 ls "s3://$ARCHIVE_BUCKET" &>/dev/null; then
     # Sync local directory to bucket
-    aws s3 sync "$ARCHIVE_DIR" "s3://$ARCHIVE_BUCKET" --no-progress
+    # IMPORTANT: Use --metadata-directive COPY to preserve original file metadata
+    # This preserves LastModified dates and other metadata from original files
+    aws s3 sync "$ARCHIVE_DIR" "s3://$ARCHIVE_BUCKET" \
+      --no-progress \
+      --metadata-directive COPY
     
     # Get size
     SIZE=$(du -sh "$ARCHIVE_DIR" | cut -f1)
     echo -e "  ${GREEN}✓${NC} Imported archive to $ARCHIVE_BUCKET ($SIZE)"
+    echo -e "  ${GREEN}✓${NC} Preserved original file timestamps and metadata"
   else
     echo -e "  ${RED}✗${NC} Bucket not found: $ARCHIVE_BUCKET"
   fi

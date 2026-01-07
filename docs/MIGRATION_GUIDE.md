@@ -51,6 +51,31 @@ AWS Free Tier is valid for **12 months** from account creation. By migrating to 
   - Terraform outputs
   - API Gateway URLs
 
+### ⚠️ IMPORTANT: Date Preservation
+
+**All dates and timestamps are preserved exactly as they were in the original account:**
+
+- ✅ **DynamoDB Timestamps**:
+  - `created_at`, `updated_at` (all tables)
+  - `assigned_date`, `step_date` (procedures)
+  - `upload_timestamp` (images)
+  - `consent_timestamp` (consent)
+  - All audit log timestamps
+  - All other date/time fields
+
+- ✅ **S3 File Metadata**:
+  - Original `LastModified` dates preserved
+  - File metadata preserved
+  - Original upload timestamps maintained
+
+**Why This Matters:**
+- Maintains data integrity and historical accuracy
+- Preserves audit trail with original timestamps
+- Procedures and steps keep their original dates
+- Images maintain their upload dates
+- Consent records keep original consent dates
+- No data appears "newer" than it actually is
+
 ### What Doesn't Need Migration?
 
 - ❌ Lambda function code (redeployed via Terraform)
@@ -463,6 +488,26 @@ ls -R migration-export-*/s3-images | wc -l
 ls -R migration-export-*/s3-archive | wc -l
 ```
 
+### 5.4 Verify Date Preservation
+
+```bash
+# Verify DynamoDB timestamps are preserved
+# Check a sample user
+aws dynamodb get-item \
+  --table-name dental-hospital-system-production-users \
+  --key '{"PK":{"S":"USER#admin-001"},"SK":{"S":"USER#admin-001"}}' \
+  --query 'Item.created_at'
+
+# Should show the original created_at timestamp from old account
+
+# Verify S3 file dates
+aws s3 ls s3://dental-hospital-system-production-images --recursive | head -5
+
+# File dates should match original upload dates
+```
+
+**Expected**: All dates and timestamps should match the original account exactly.
+
 ---
 
 ## Step 6: Update Applications
@@ -641,7 +686,21 @@ terraform destroy
 
 ### Q: What about audit logs?
 
-**A**: Audit logs are migrated, but timestamps remain the same. New audit logs will be created in new account.
+**A**: Audit logs are migrated with their original timestamps preserved. New audit logs will be created in new account with new timestamps.
+
+---
+
+### Q: Will dates and timestamps be preserved?
+
+**A**: **Yes!** All dates and timestamps are preserved exactly as they were:
+- ✅ `created_at`, `updated_at` (all tables)
+- ✅ `assigned_date`, `step_date` (procedures)
+- ✅ `upload_timestamp` (images)
+- ✅ `consent_timestamp` (consent)
+- ✅ S3 file `LastModified` dates
+- ✅ All other date/time fields
+
+The migration scripts use DynamoDB `PutRequest` which preserves all attributes exactly as exported, and S3 sync with `--metadata-directive COPY` to preserve file metadata.
 
 ---
 

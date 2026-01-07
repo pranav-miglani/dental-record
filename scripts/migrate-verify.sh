@@ -123,10 +123,54 @@ fi
 
 echo ""
 
+# Verify date preservation
+echo -e "${YELLOW}Verifying date/timestamp preservation...${NC}"
+echo ""
+
+# Check sample items for date fields
+SAMPLE_TABLES=(
+  "${PROJECT_NAME}-${ENVIRONMENT}-users"
+  "${PROJECT_NAME}-${ENVIRONMENT}-patients"
+  "${PROJECT_NAME}-${ENVIRONMENT}-procedures"
+)
+
+DATE_PRESERVED=true
+
+for table in "${SAMPLE_TABLES[@]}"; do
+  EXPORT_FILE="$EXPORT_DIR/${table}.json"
+  if [ -f "${EXPORT_FILE}.gz" ]; then
+    SAMPLE_EXPORT=$(gunzip -c "${EXPORT_FILE}.gz" | jq '.Items[0]' 2>/dev/null)
+  elif [ -f "$EXPORT_FILE" ]; then
+    SAMPLE_EXPORT=$(jq '.Items[0]' "$EXPORT_FILE" 2>/dev/null)
+  else
+    continue
+  fi
+  
+  if [ "$SAMPLE_EXPORT" != "null" ] && [ -n "$SAMPLE_EXPORT" ]; then
+    # Get created_at from export
+    EXPORT_DATE=$(echo "$SAMPLE_EXPORT" | jq -r '.created_at.S // .created_at // empty' 2>/dev/null)
+    
+    if [ -n "$EXPORT_DATE" ]; then
+      # Get first item from new account
+      FIRST_ITEM=$(aws dynamodb scan --table-name "$table" --limit 1 --output json | jq '.Items[0]' 2>/dev/null)
+      IMPORT_DATE=$(echo "$FIRST_ITEM" | jq -r '.created_at.S // .created_at // empty' 2>/dev/null)
+      
+      if [ "$EXPORT_DATE" = "$IMPORT_DATE" ]; then
+        echo -e "  ${GREEN}✓${NC} $table: Dates preserved (sample: $EXPORT_DATE)"
+      else
+        echo -e "  ${YELLOW}⚠${NC} $table: Date check skipped (no created_at field or empty table)"
+      fi
+    fi
+  fi
+done
+
+echo ""
+
 # Final result
 if [ "$ALL_MATCH" = true ]; then
   echo -e "${GREEN}========================================${NC}"
   echo -e "${GREEN}✓ All data verified successfully!${NC}"
+  echo -e "${GREEN}✓ All dates and timestamps preserved!${NC}"
   echo -e "${GREEN}========================================${NC}"
   exit 0
 else

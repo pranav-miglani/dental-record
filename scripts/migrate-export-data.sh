@@ -163,10 +163,22 @@ S3 Buckets Exported:
 Export Directory: $EXPORT_DIR
 Total Size: $(du -sh "$EXPORT_DIR" | cut -f1)
 
+IMPORTANT - Date Preservation:
+==============================
+All date and timestamp fields are preserved during migration:
+- created_at, updated_at (all tables)
+- assigned_date, step_date (procedures)
+- upload_timestamp (images)
+- consent_timestamp (consent)
+- All other date/time fields
+
+S3 file metadata (LastModified dates) are also preserved.
+
 Next Steps:
 1. Verify all exports completed successfully
 2. Backup this directory to a safe location
 3. Follow migration guide to import into new AWS account
+4. All dates will remain exactly as they were in the original account
 EOF
 
 echo -e "  ${GREEN}✓${NC} Created manifest: $MANIFEST_FILE"

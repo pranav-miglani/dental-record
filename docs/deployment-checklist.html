@@ -348,17 +348,17 @@
     <script>
         const checklistData = {
             "📚 Read Documentation First": {
-                "Read Deployment Guide": {
-                    description: "📖 Read DEPLOYMENT.md for complete deployment instructions. This consolidated guide includes everything: quick start, interactive deployment, GitHub Secrets, custom domains, and troubleshooting.",
-                    command: "# Open: docs/DEPLOYMENT.md\n# Read through all sections before starting\n# Sections: Quick Start, Prerequisites, Interactive Deployment, GitHub Secrets, Custom Domain, Manual Deployment, Migration, Troubleshooting"
+                "Read Complete Deployment Guide": {
+                    description: "📖 Read DEPLOYMENT.md for complete deployment instructions. This consolidated guide includes everything: quick start, interactive deployment, GitHub Secrets, custom domains, manual deployment, migration, and troubleshooting.",
+                    command: "# Open: docs/DEPLOYMENT.md\n# Read through all sections:\n# - Quick Start\n# - Prerequisites\n# - Interactive Deployment (Recommended)\n# - GitHub Secrets Setup (CI/CD)\n# - Custom Domain Setup (Optional)\n# - Manual Deployment\n# - Migration Guide\n# - Troubleshooting\n# - Verification"
                 },
                 "Understand What You're Deploying": {
-                    description: "Understand: AWS = Cloud platform, Terraform = Infrastructure tool, Lambda = Code execution, DynamoDB = Database, S3 = File storage, API Gateway = REST API",
-                    command: "# Review the Prerequisites section in DEPLOYMENT.md\n# Key concepts: Serverless architecture, Infrastructure as Code, CI/CD"
+                    description: "Understand the system architecture: AWS = Cloud platform, Terraform = Infrastructure as Code, Lambda = Serverless functions, DynamoDB = NoSQL database, S3 = File storage, API Gateway = REST API, CloudFront = CDN",
+                    command: "# Review Prerequisites section in DEPLOYMENT.md\n# Key concepts:\n# - Serverless architecture (Lambda, API Gateway)\n# - Infrastructure as Code (Terraform)\n# - NoSQL database (DynamoDB)\n# - Object storage (S3)\n# - CI/CD (GitHub Actions)"
                 },
                 "Choose Deployment Method": {
-                    description: "Choose your deployment method: 1) Interactive (npm run deploy) - Recommended for beginners, 2) GitHub Secrets (CI/CD) - For automated deployments, 3) Manual - For experienced developers",
-                    command: "# Review Quick Start section in DEPLOYMENT.md\n# Interactive: npm run deploy (easiest)\n# GitHub Secrets: For CI/CD pipelines\n# Manual: Full control"
+                    description: "Choose your deployment method: 1) Interactive (npm run deploy) - Recommended, asks for all config, 2) GitHub Secrets (CI/CD) - For automated deployments, 3) Manual - For experienced developers who want full control",
+                    command: "# Review Quick Start section in DEPLOYMENT.md\n# Method 1: Interactive (Easiest)\n#   npm run deploy\n#   - Asks for all configuration\n#   - Deploys everything automatically\n#   - Best for beginners\n\n# Method 2: GitHub Secrets (CI/CD)\n#   - Store secrets in GitHub\n#   - Auto-deploy on push\n#   - Best for teams\n\n# Method 3: Manual\n#   - Full control\n#   - Step-by-step commands\n#   - Best for experienced developers"
                 }
             },
             "🚀 Interactive Deployment (Recommended)": {
@@ -380,25 +380,37 @@
                 }
             },
             "🔐 GitHub Secrets Setup (CI/CD)": {
+                "Read GitHub Secrets Section": {
+                    description: "Read the GitHub Secrets Setup section in DEPLOYMENT.md. This explains why to use GitHub Secrets, what secrets are needed, and how to set them up.",
+                    command: "# Open: docs/DEPLOYMENT.md\n# Go to: GitHub Secrets Setup (CI/CD) section\n# Read: Why Use GitHub Secrets, Required Secrets, Setup Steps"
+                },
                 "Navigate to Repository Settings": {
-                    description: "Go to GitHub repository settings to add secrets. Path: Repository → Settings → Secrets and variables → Actions.",
-                    command: "# Go to:\n# https://github.com/YOUR_USERNAME/YOUR_REPO/settings/secrets/actions\n# Click 'New repository secret'"
+                    description: "Go to GitHub repository settings to add secrets. Path: Repository → Settings → Secrets and variables → Actions. See DEPLOYMENT.md for detailed steps.",
+                    command: "# Go to:\n# https://github.com/YOUR_USERNAME/YOUR_REPO/settings/secrets/actions\n# Click 'New repository secret' for each secret\n\n# Required secrets:\n# - AWS_ACCESS_KEY_ID\n# - AWS_SECRET_ACCESS_KEY\n# - JWT_SECRET"
                 },
                 "Add AWS Credentials": {
-                    description: "Add AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY secrets. Get these from AWS IAM → Users → Security Credentials.",
-                    command: "# Add secrets:\n# AWS_ACCESS_KEY_ID: AKIA...\n# AWS_SECRET_ACCESS_KEY: wJalr...\n# ⚠️ Copy secret key immediately - you won't see it again!"
+                    description: "Add AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY secrets. Get these from AWS IAM → Users → Your User → Security Credentials → Create Access Key. ⚠️ Copy secret key immediately - you won't see it again!",
+                    command: "# Get from AWS Console:\n# IAM → Users → Your User → Security Credentials → Create Access Key\n\n# Add secrets:\n# Name: AWS_ACCESS_KEY_ID\n# Value: AKIA...\n\n# Name: AWS_SECRET_ACCESS_KEY\n# Value: wJalr...\n\n# ⚠️ Copy secret key immediately - you won't see it again!"
                 },
                 "Add Core Configuration": {
-                    description: "Add JWT_SECRET (generate: openssl rand -base64 32), ADMIN_PASSWORD, AWS_REGION (optional), PROJECT_NAME (optional).",
-                    command: "# Generate JWT secret:\nopenssl rand -base64 32\n\n# Add secrets:\n# JWT_SECRET: (generated secret)\n# ADMIN_PASSWORD: YourSecurePassword123!\n# AWS_REGION: us-east-1 (optional)\n# PROJECT_NAME: dental-hospital-system (optional)"
+                    description: "Add JWT_SECRET (generate: openssl rand -base64 32), ADMIN_PASSWORD, AWS_REGION (optional, defaults to us-east-1), PROJECT_NAME (optional, defaults to dental-hospital-system).",
+                    command: "# Generate JWT secret:\nopenssl rand -base64 32\n\n# Add secrets:\n# Name: JWT_SECRET\n# Value: (generated secret from above)\n\n# Name: ADMIN_PASSWORD\n# Value: YourSecurePassword123!\n\n# Optional:\n# Name: AWS_REGION\n# Value: us-east-1\n\n# Name: PROJECT_NAME\n# Value: dental-hospital-system"
                 },
                 "Add Custom Domain Secrets (Optional)": {
-                    description: "If using custom domains, add: API_CUSTOM_DOMAIN, ROUTE53_HOSTED_ZONE_ID, ACM_CERTIFICATE_ARN, CLOUDFRONT_CUSTOM_DOMAIN, etc.",
-                    command: "# Optional secrets for custom domain:\n# API_CUSTOM_DOMAIN: api.rghs-dental.info\n# ROUTE53_HOSTED_ZONE_ID: Z1234567890ABC\n# ACM_CERTIFICATE_ARN: arn:aws:acm:...\n# CLOUDFRONT_CUSTOM_DOMAIN: cdn.rghs-dental.info\n# etc."
+                    description: "If using custom domains, add: API_CUSTOM_DOMAIN, ROUTE53_HOSTED_ZONE_ID, ACM_CERTIFICATE_ARN, CLOUDFRONT_CUSTOM_DOMAIN, CLOUDFRONT_ROUTE53_ZONE_ID, CLOUDFRONT_ACM_CERTIFICATE_ARN. See DEPLOYMENT.md Custom Domain section.",
+                    command: "# Optional secrets for custom domain:\n# Name: API_CUSTOM_DOMAIN\n# Value: api.rghs-dental.info\n\n# Name: ROUTE53_HOSTED_ZONE_ID\n# Value: Z1234567890ABC\n\n# Name: ACM_CERTIFICATE_ARN\n# Value: arn:aws:acm:us-east-1:123456789012:certificate/abc123\n\n# Name: CLOUDFRONT_CUSTOM_DOMAIN\n# Value: cdn.rghs-dental.info\n\n# Name: CLOUDFRONT_ROUTE53_ZONE_ID\n# Value: Z1234567890ABC\n\n# Name: CLOUDFRONT_ACM_CERTIFICATE_ARN\n# Value: arn:aws:acm:us-east-1:123456789012:certificate/xyz789"
+                },
+                "Verify All Secrets Added": {
+                    description: "Verify all required secrets are added. You should see: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, JWT_SECRET, and optionally ADMIN_PASSWORD, AWS_REGION, PROJECT_NAME, and custom domain secrets.",
+                    command: "# Check in GitHub:\n# Settings → Secrets and variables → Actions\n# Should see:\n# ✓ AWS_ACCESS_KEY_ID\n# ✓ AWS_SECRET_ACCESS_KEY\n# ✓ JWT_SECRET\n# ✓ ADMIN_PASSWORD (optional)\n# ✓ AWS_REGION (optional)\n# ✓ PROJECT_NAME (optional)\n# ✓ Custom domain secrets (if using)"
                 },
                 "Deploy via GitHub Actions": {
-                    description: "Deploy via GitHub Actions. Push to main branch (auto-deploys) OR go to Actions → Deploy to AWS → Run workflow.",
-                    command: "# Option 1: Push to main\ngit push origin main\n# Auto-deploys using GitHub Secrets\n\n# Option 2: Manual trigger\n# Go to: Actions → Deploy to AWS → Run workflow"
+                    description: "Deploy via GitHub Actions. Push to main branch (auto-deploys) OR go to Actions → Deploy to AWS → Run workflow. See DEPLOYMENT.md for details.",
+                    command: "# Option 1: Push to main (auto-deploy)\ngit push origin main\n# GitHub Actions will:\n# - Load secrets from GitHub Secrets\n# - Deploy infrastructure\n# - Deploy application\n# - Create admin user\n\n# Option 2: Manual trigger\n# Go to: Actions → Deploy to AWS → Run workflow\n# Select environment: production\n# Click 'Run workflow'"
+                },
+                "Monitor GitHub Actions": {
+                    description: "Monitor the GitHub Actions workflow. Check the Actions tab to see deployment progress, logs, and any errors. The workflow will show deployment summary when complete.",
+                    command: "# Go to: Actions tab in GitHub\n# Click on latest workflow run\n# Watch deployment steps:\n# - Checkout code\n# - Setup Node.js\n# - Setup Terraform\n# - Configure AWS credentials\n# - Load configuration from secrets\n# - Install dependencies\n# - Run deployment\n# - Save deployment outputs\n\n# Check logs for any errors"
                 }
             },
             "🌐 Custom Domain Setup (Optional)": {
@@ -585,25 +597,33 @@
             },
             },
             "🔄 Migration (New AWS Account)": {
+                "Read Migration Guide": {
+                    description: "Read the Migration Guide section in DEPLOYMENT.md and MIGRATION_GUIDE.md. This explains the free tier strategy, what gets migrated, and date preservation. Migration is for moving to a new AWS account after 10-11 months.",
+                    command: "# Open: docs/DEPLOYMENT.md\n# Go to: Migration Guide section\n# Also see: docs/MIGRATION_GUIDE.md (detailed guide)\n\n# Understand:\n# - Why migrate (free tier expires after 12 months)\n# - What gets migrated (DynamoDB tables, S3 objects)\n# - Date preservation (all timestamps preserved)\n# - Timeline (migrate at month 10-11)"
+                },
                 "Export Data from Old Account": {
-                    description: "Export all data from old AWS account. Run migration export script with old account credentials configured.",
-                    command: "export AWS_PROFILE=old-account\n./scripts/migrate-export-data.sh\n# Creates migration-export-YYYYMMDD-HHMMSS directory\n# Exports DynamoDB tables and S3 objects"
+                    description: "Export all data from old AWS account. Configure AWS CLI for old account, then run migration export script. This exports DynamoDB tables and downloads S3 objects. See MIGRATION_GUIDE.md for details.",
+                    command: "# Configure old account:\naws configure --profile old-account\n# Enter old account credentials\n\n# Export data:\nexport AWS_PROFILE=old-account\n./scripts/migrate-export-data.sh\n\n# Creates directory: migration-export-YYYYMMDD-HHMMSS\n# Contains:\n# - DynamoDB table exports (JSON files)\n# - S3 object downloads\n# - Migration manifest\n\n# ⚠️ This preserves all dates and timestamps!"
                 },
                 "Deploy Infrastructure in New Account": {
-                    description: "Deploy infrastructure in new AWS account. Use migration mode to skip infrastructure deployment if already exists.",
-                    command: "export AWS_PROFILE=new-account\nnpm run deploy:all:migration\n# OR:\n./scripts/deploy-all.sh --migration --skip-admin"
+                    description: "Deploy infrastructure in new AWS account. Configure AWS CLI for new account, then run deployment in migration mode. This skips admin user creation (will import users from migration).",
+                    command: "# Configure new account:\naws configure --profile new-account\n# Enter new account credentials\n\n# Deploy infrastructure:\nexport AWS_PROFILE=new-account\nnpm run deploy:all:migration\n\n# OR:\n./scripts/deploy-all.sh --migration --skip-admin\n\n# This will:\n# - Deploy all infrastructure\n# - Build and deploy Lambda functions\n# - Deploy API Gateway\n# - Skip admin user creation (will import from migration)"
                 },
                 "Import Data to New Account": {
-                    description: "Import all data to new AWS account. This preserves all dates and timestamps exactly as they were.",
-                    command: "./scripts/migrate-import-data.sh ./migration-export-YYYYMMDD-HHMMSS\n# Imports DynamoDB tables (preserves dates)\n# Syncs S3 objects (preserves metadata)"
+                    description: "Import all data to new AWS account. This preserves all dates and timestamps exactly as they were in the original account. DynamoDB timestamps (created_at, updated_at, etc.) and S3 metadata are preserved.",
+                    command: "# Import data:\nexport AWS_PROFILE=new-account\n./scripts/migrate-import-data.sh ./migration-export-YYYYMMDD-HHMMSS\n\n# This will:\n# - Import DynamoDB tables (preserves all timestamps)\n# - Upload S3 objects (preserves LastModified dates)\n# - Preserve all metadata\n\n# ⚠️ All dates remain exactly as they were!\n# - created_at, updated_at preserved\n# - assigned_date, step_date preserved\n# - upload_timestamp preserved\n# - consent_timestamp preserved\n# - All audit log timestamps preserved"
                 },
                 "Verify Migration": {
-                    description: "Verify migration was successful. Compare item counts and sample data between old and new accounts.",
-                    command: "./scripts/migrate-verify.sh ./migration-export-YYYYMMDD-HHMMSS\n# Compares:\n# - DynamoDB table item counts\n# - S3 bucket sizes\n# - Sample timestamps (dates preserved)"
+                    description: "Verify migration was successful. Run verification script to compare item counts, S3 bucket sizes, and sample timestamps between old and new accounts. All dates should match exactly.",
+                    command: "./scripts/migrate-verify.sh ./migration-export-YYYYMMDD-HHMMSS\n\n# Compares:\n# - DynamoDB table item counts (should match)\n# - S3 bucket sizes (should match)\n# - Sample timestamps (should match exactly)\n\n# Expected output:\n# ✓ Users table: 100 items (matches)\n# ✓ Patients table: 500 items (matches)\n# ✓ Images bucket: 2.5 GB (matches)\n# ✓ Sample created_at: 2024-01-15T10:30:00Z (matches)\n\n# ✅ If all match, migration successful!"
                 },
                 "Update Applications": {
-                    description: "Update frontend/mobile applications with new API URL. Test login and verify all data is accessible.",
-                    command: "cat api-url.txt\n# Update API_BASE_URL in:\n# - Frontend .env\n# - Mobile app config\n# Test login and verify data"
+                    description: "Update frontend/mobile applications with new API URL. Get the new API URL, update configuration files, test login, and verify all data is accessible.",
+                    command: "# Get new API URL:\ncat api-url.txt\n# Should show new account's API Gateway URL\n\n# Update frontend:\n# Edit frontend/.env\n# API_BASE_URL=https://new-api-url.execute-api.us-east-1.amazonaws.com/prod\n\n# Update mobile app:\n# Edit mobile/src/constants/config.ts\n# API_BASE_URL=https://new-api-url.execute-api.us-east-1.amazonaws.com/prod\n\n# Test:\n# - Login with existing credentials\n# - Verify all patients visible\n# - Verify all procedures visible\n# - Verify all images accessible\n# - Check dates are correct (not changed)"
+                },
+                "Cleanup Old Account": {
+                    description: "After verifying migration is successful and applications are working, you can delete resources in the old AWS account. ⚠️ Only do this after thorough verification!",
+                    command: "# ⚠️ ONLY after thorough verification!\n\n# Option 1: Delete via Terraform\ncd infrastructure\nexport AWS_PROFILE=old-account\nterraform destroy\n# Type: yes\n\n# Option 2: Delete manually via AWS Console\n# Delete:\n# - DynamoDB tables\n# - S3 buckets\n# - Lambda functions\n# - API Gateway\n# - CloudFront distribution\n# - IAM roles\n\n# ⚠️ Be careful - this is irreversible!"
                 }
             },
             "Application Deployment": {
@@ -745,21 +765,33 @@
                 }
             },
             "Final Verification": {
+                "Read Verification Section": {
+                    description: "Read the Verification section in DEPLOYMENT.md. This provides comprehensive verification steps for all resources, API endpoints, and system functionality.",
+                    command: "# Open: docs/DEPLOYMENT.md\n# Go to: Verification section\n# Follow all verification steps:\n# - Check API Gateway\n# - Check Lambda Functions\n# - Check DynamoDB Tables\n# - Check S3 Buckets\n# - Check CloudWatch Logs"
+                },
                 "Verify All Resources": {
-                    description: "Verify all AWS resources are created and accessible.",
-                    command: "# Check:\n# - All DynamoDB tables exist\n# - All Lambda functions deployed\n# - API Gateway is accessible\n# - S3 buckets exist"
+                    description: "Verify all AWS resources are created and accessible. Use AWS CLI commands to check DynamoDB tables, Lambda functions, S3 buckets, and API Gateway. See DEPLOYMENT.md Verification section for commands.",
+                    command: "# Check DynamoDB tables:\naws dynamodb list-tables | grep dental-hospital\n# Should see 8 tables\n\n# Check Lambda functions:\naws lambda list-functions | grep dental-hospital\n# Should see 10+ functions\n\n# Check S3 buckets:\naws s3 ls | grep dental-hospital\n# Should see 3 buckets (images, archive, terraform-state)\n\n# Check API Gateway:\naws apigateway get-rest-apis | grep dental-hospital\n# Should see 1 API\n\n# ✅ If all resources exist, infrastructure is deployed!"
                 },
                 "Test Complete Workflow": {
-                    description: "Test complete user workflow: login → create patient → create procedure → upload image.",
-                    command: "# End-to-end testing of complete workflow"
+                    description: "Test complete user workflow: login → create patient → create procedure → upload image. This verifies the entire system works end-to-end. See DEPLOYMENT.md for detailed test commands.",
+                    command: "# 1. Login:\nAPI_URL=$(cat api-url.txt)\nLOGIN_RESPONSE=$(curl -X POST \"$API_URL/api/auth/login\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"mobile_number\":\"9999999999\",\"password\":\"YourPassword\"}')\n\n# Extract token:\nACCESS_TOKEN=$(echo $LOGIN_RESPONSE | jq -r '.access_token')\n\n# 2. Create patient:\ncurl -X POST \"$API_URL/api/patients\" \\\n  -H \"Authorization: Bearer $ACCESS_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{...patient data...}'\n\n# 3. Create procedure:\ncurl -X POST \"$API_URL/api/procedures\" \\\n  -H \"Authorization: Bearer $ACCESS_TOKEN\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{...procedure data...}'\n\n# 4. Upload image:\ncurl -X POST \"$API_URL/api/images\" \\\n  -H \"Authorization: Bearer $ACCESS_TOKEN\" \\\n  -F \"file=@image.jpg\" \\\n  -F \"procedure_id=...\" \\\n  -F \"step_id=...\"\n\n# ✅ If all steps work, system is fully functional!"
+                },
+                "Check CloudWatch Logs": {
+                    description: "Check CloudWatch logs for any errors. Review logs for Lambda functions to ensure there are no runtime errors. See DEPLOYMENT.md Verification section.",
+                    command: "# Check auth handler logs:\naws logs tail /aws/lambda/dental-hospital-system-production-auth-handler --follow\n\n# Check other handlers:\naws logs tail /aws/lambda/dental-hospital-system-production-users-handler\naws logs tail /aws/lambda/dental-hospital-system-production-patients-handler\n\n# Look for:\n# - ERROR messages\n# - Exception traces\n# - Failed requests\n\n# ✅ If no errors, system is healthy!"
                 },
                 "Document Configuration": {
-                    description: "Document your specific configuration (API URLs, bucket names, etc.).",
-                    command: "# Save all important URLs and configuration values\n# Create a local config file (don't commit secrets!)"
+                    description: "Document your specific configuration (API URLs, bucket names, table names, etc.). Create a local config file (don't commit secrets!). This helps with future deployments and troubleshooting.",
+                    command: "# Create local config file:\ncat > deployment-config.txt << EOF\n# Deployment Configuration\n# Date: $(date)\n\nAPI_URL=$(cat api-url.txt)\nADMIN_MOBILE=9999999999\nADMIN_PASSWORD=(your password)\n\n# Terraform Outputs:\n$(cat terraform-outputs.json | jq -r 'to_entries[] | \"\(.key): \(.value.value)\"')\nEOF\n\n# ⚠️ DO NOT commit this file to git!\n# It contains sensitive information\n# Keep it secure locally"
                 },
                 "Backup Configuration": {
-                    description: "Backup Terraform state and configuration files.",
-                    command: "# Backup:\n# - terraform-outputs.json\n# - terraform.tfvars (without secrets)\n# - .env file (securely, not in git)"
+                    description: "Backup Terraform state and configuration files securely. This helps with disaster recovery and future reference. Store backups securely (not in git).",
+                    command: "# Backup files:\n# 1. Terraform outputs:\ncp terraform-outputs.json ~/backups/\n\n# 2. Terraform variables (without secrets):\ncat terraform.tfvars | grep -v jwt_secret > ~/backups/terraform.tfvars.backup\n\n# 3. API URL:\ncp api-url.txt ~/backups/\n\n# 4. .env file (securely, encrypted):\n# Use encryption tool or secure storage\n# DO NOT store in plain text!\n\n# ⚠️ Keep backups secure and encrypted!"
+                },
+                "Review Success Criteria": {
+                    description: "Review the Success Criteria section in DEPLOYMENT.md. Verify all criteria are met: terraform apply completed, Lambda functions deployed, API Gateway accessible, login works, can create patient, can upload image, no CloudWatch errors.",
+                    command: "# Check Success Criteria from DEPLOYMENT.md:\n# ✅ terraform apply completed without errors\n# ✅ All Lambda functions deployed\n# ✅ API Gateway URL accessible\n# ✅ Can login with admin credentials\n# ✅ Can create a patient via API\n# ✅ Can upload an image\n# ✅ CloudWatch logs show no errors\n\n# If all criteria met:\n# 🎉 Deployment successful!"
                 }
             }
         };

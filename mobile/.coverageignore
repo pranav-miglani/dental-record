@@ -1,0 +1,9 @@
+# Coverage ignore patterns
+src/index.web.tsx
+src/App.web.tsx
+**/__tests__/**
+**/__mocks__/**
+*.test.ts
+*.test.tsx
+*.e2e.test.ts
+

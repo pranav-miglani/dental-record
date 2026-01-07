@@ -1,0 +1,43 @@
+{
+  "common": {
+    "loading": "लोड हो रहा है...",
+    "error": "एक त्रुटि हुई",
+    "success": "सफल",
+    "cancel": "रद्द करें",
+    "save": "सहेजें",
+    "delete": "हटाएं",
+    "edit": "संपादित करें",
+    "back": "वापस",
+    "next": "अगला",
+    "submit": "जमा करें",
+    "search": "खोजें",
+    "filter": "फ़िल्टर",
+    "noData": "कोई डेटा उपलब्ध नहीं"
+  },
+  "navigation": {
+    "dashboard": "डैशबोर्ड",
+    "patients": "मरीज",
+    "procedures": "प्रक्रियाएं",
+    "profile": "प्रोफ़ाइल",
+    "settings": "सेटिंग्स"
+  },
+  "auth": {
+    "login": {
+      "title": "वापसी पर स्वागत है",
+      "subtitle": "जारी रखने के लिए साइन इन करें",
+      "mobileNumber": "मोबाइल नंबर",
+      "password": "पासवर्ड",
+      "button": "साइन इन करें",
+      "forgotPassword": "पासवर्ड भूल गए?",
+      "error": "अमान्य मोबाइल नंबर या पासवर्ड"
+    }
+  },
+  "patients": {
+    "title": "मरीज",
+    "searchPlaceholder": "नाम या मोबाइल नंबर से खोजें"
+  },
+  "procedures": {
+    "title": "प्रक्रियाएं"
+  }
+}
+

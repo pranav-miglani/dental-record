@@ -1,0 +1,97 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "noData": "No data available"
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "patients": "Patients",
+    "procedures": "Procedures",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "auth": {
+    "login": {
+      "title": "Welcome Back",
+      "subtitle": "Sign in to continue",
+      "mobileNumber": "Mobile Number",
+      "password": "Password",
+      "button": "Sign In",
+      "forgotPassword": "Forgot Password?",
+      "error": "Invalid mobile number or password"
+    },
+    "passwordReset": {
+      "title": "Reset Password",
+      "subtitle": "Enter your mobile number to receive OTP",
+      "mobileNumber": "Mobile Number",
+      "button": "Send OTP",
+      "success": "OTP sent to your mobile number"
+    },
+    "otpVerification": {
+      "title": "Verify OTP",
+      "subtitle": "Enter the OTP sent to your mobile number",
+      "otp": "OTP",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm Password",
+      "button": "Reset Password",
+      "error": "Invalid OTP"
+    }
+  },
+  "patients": {
+    "title": "Patients",
+    "searchPlaceholder": "Search by name or mobile number",
+    "addPatient": "Add Patient",
+    "noPatients": "No patients found",
+    "details": {
+      "title": "Patient Details",
+      "name": "Name",
+      "mobileNumber": "Mobile Number",
+      "dateOfBirth": "Date of Birth",
+      "gender": "Gender",
+      "aadhaar": "Aadhaar (Last 4)",
+      "procedures": "Procedures"
+    }
+  },
+  "procedures": {
+    "title": "Procedures",
+    "addProcedure": "Add Procedure",
+    "noProcedures": "No procedures found",
+    "status": {
+      "draft": "Draft",
+      "inProgress": "In Progress",
+      "closed": "Closed",
+      "cancelled": "Cancelled"
+    },
+    "types": {
+      "rct": "RCT",
+      "scaling": "Scaling",
+      "extraction": "Extraction"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "name": "Name",
+    "mobileNumber": "Mobile Number",
+    "roles": "Roles",
+    "logout": "Logout"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "notifications": "Notifications",
+    "about": "About"
+  }
+}
+
